@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KUET Career Club — Let Passion Drive Your Profession</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="mouse-canvas"></canvas>
+
+    <!-- NAV -->
+    <nav id="main-nav">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-mark">
+          <img src="images/lo.jpg" alt="KCC Logo" />
+        </div>
+        <div class="nav-logo-text">
+          KUET Career Club
+          <span>Est. KUET · Khulna</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li>
+          <a href="#about"><span class="link-text">About</span></a>
+        </li>
+        <li>
+          <a href="#programs"><span class="link-text">Programs</span></a>
+        </li>
+        <li>
+          <a href="#services"><span class="link-text">Services</span></a>
+        </li>
+        <li>
+          <a href="#journey"><span class="link-text">Journey</span></a>
+        </li>
+        <li>
+          <a href="#contact"><span class="link-text">Contact</span></a>
+        </li>
+        <li><a href="#contact" class="nav-cta">Join KCC</a></li>
+      </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero">
+      <canvas id="hero-canvas"></canvas>
+      <div class="hero-grid-overlay"></div>
+      <div class="hero-glow"></div>
+      <div class="hero-glow-2"></div>
+      <div class="hero-content">
+        <div class="hero-badge">
+          <div class="hero-badge-dot"></div>
+          Khulna University of Engineering &amp; Technology
+        </div>
+        <h1 class="hero-title">
+          <span class="line">Let Passion</span>
+          <span class="line accent" id="typewriter-line"
+            >Drive Your Profession</span
+          >
+        </h1>
+        <p class="hero-sub">
+          KUET Career Club empowers students to discover, prepare, and excel in
+          their chosen career paths — from engineering to civil service,
+          startups to research.
+        </p>
+        <div class="hero-actions">
+          <a href="#programs" class="btn-primary">Explore Programs</a>
+          <a href="#about" class="btn-secondary">Learn More</a>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num" data-count="500">
+            <span class="unit">500</span>+
+          </div>
+          <div class="hero-stat-label">Active Members</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num"><span class="unit">50</span>+</div>
+          <div class="hero-stat-label">Events Held</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num"><span class="unit">5</span></div>
+          <div class="hero-stat-label">Flagship Series</div>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <div class="section-label">Who We Are</div>
+          <h2 class="section-title">Bridging Academia<br />& Real Careers</h2>
+          <div class="about-motto">"Let Passion Drive Your Profession"</div>
+          <p>
+            KUET Career Club (KCC) is a career-oriented student club at Khulna
+            University of Engineering and Technology. We exist to bridge the gap
+            between academic excellence and real-world career readiness.
+          </p>
+          <p>
+            Our programs span career seminars, BCS preparation, study abroad
+            guidance, technical workshops, and leadership development — all
+            designed to give KUETians a decisive edge after graduation.
+          </p>
+          <a
+            href="#programs"
+            class="btn-secondary"
+            style="display: inline-block"
+            >See Our Programs</a
+          >
+        </div>
+        <div class="about-visual reveal">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-num"><span class="s-unit">5+</span></div>
+              <div class="stat-label">Years of Impact</div>
+            </div>
+            <div class="stat-card gold-accent">
+              <div class="stat-num">
+                <span class="s-unit" style="color: var(--gold)">100+</span>
+              </div>
+              <div class="stat-label">Alumni Network</div>
+            </div>
+            <div class="stat-card gold-accent">
+              <div class="stat-num">
+                <span class="s-unit" style="color: var(--gold)">20+</span>
+              </div>
+              <div class="stat-label">Industry Partners</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num"><span class="s-unit">3</span></div>
+              <div class="stat-label">Active Wings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRAMS -->
+    <section id="programs">
+      <div class="programs-header reveal">
+        <div>
+          <div class="section-label">What We Run</div>
+          <h2 class="section-title">Flagship Programs<br />&amp; Events</h2>
+        </div>
+        <p class="section-sub" style="max-width: 360px">
+          From business competitions to BCS prep — every event is crafted to
+          unlock your potential.
+        </p>
+      </div>
+      <div class="programs-grid">
+        <div class="program-card reveal">
+          <div class="program-visual"></div>
+          <div class="program-img-wrap">
+            <img src="" alt="BizBattle" class="program-real-img" />
+            <div class="program-img-overlay">
+              <span class="program-img-tag">🏆 National Competition</span>
+            </div>
+          </div>
+          <div class="program-body">
+            <h3>BizBattle</h3>
+            <p>
+              KCC's flagship national business idea competition with a 225K
+              prize pool. Teams of 1–4 members compete at KUET from 1st
+              March–18th April 2026.
+            </p>
+            <span class="program-tag">Competition</span>
+          </div>
+        </div>
+        <div class="program-card reveal">
+          <div class="program-visual"></div>
+          <div class="program-img-wrap">
+            <img
+              src=""
+              alt="Higher Education in USA"
+              class="program-real-img"
+            />
+            <div class="program-img-overlay">
+              <span class="program-img-tag">✈️ Study Abroad</span>
+            </div>
+          </div>
+          <div class="program-body">
+            <h3>Higher Education in the USA</h3>
+            <p>
+              KCC in partnership with EducationUSA — interactive seminar on
+              application, GRE/TOEFL, scholarships, SOP, recommendation letters,
+              and exchange opportunities.
+            </p>
+            <span
+              class="program-tag"
+              style="color: var(--gold); border-color: rgba(245, 200, 66, 0.25)"
+              >Seminar</span
+            >
+          </div>
+        </div>
+        <div class="program-card reveal">
+          <div class="program-visual"></div>
+          <div class="program-img-wrap">
+            <img src="" alt="Campus2Career" class="program-real-img" />
+            <div class="program-img-overlay">
+              <span class="program-img-tag">💼 Recruitment</span>
+            </div>
+          </div>
+          <div class="program-body">
+            <h3>Campus2Career</h3>
+            <p>
+              An on-campus recruitment program by KCC featuring top companies
+              like RFL Group — connecting students directly with industry
+              recruiters on KUET campus.
+            </p>
+            <span
+              class="program-tag"
+              style="color: #b06aff; border-color: rgba(176, 106, 255, 0.25)"
+              >Recruitment</span
+            >
+          </div>
+        </div>
+        <div class="program-card reveal">
+          <div class="program-visual"></div>
+          <div class="program-img-wrap">
+            <img
+              src=""
+              alt="Green Entrepreneurship Career Guidance"
+              class="program-real-img"
+            />
+            <div class="program-img-overlay">
+              <span
+                class="program-img-tag"
+                style="
+                  color: #00e5b0;
+                  border-color: rgba(0, 229, 176, 0.3);
+                  background: rgba(0, 229, 176, 0.1);
+                "
+                >💡 Career Guidance</span
+              >
+            </div>
+          </div>
+          <div class="program-body">
+            <h3>Skill Dev & Career Guidance</h3>
+            <p>
+              Organized in partnership with a2i, ActionAid Bangladesh, ICT
+              Division & UNDP — sessions like the Green Entrepreneurship Career
+              Guidance on 13 Nov 2024 at KUET.
+            </p>
+            <span
+              class="program-tag"
+              style="color: #00e5b0; border-color: rgba(0, 229, 176, 0.25)"
+              >Skill-Building</span
+            >
+          </div>
+        </div>
+        <div class="program-card reveal">
+          <div class="program-visual"></div>
+          <div class="program-img-wrap">
+            <img
+              src=""
+              alt="Baffling Career Choices Podcast"
+              class="program-real-img"
+            />
+            <div class="program-img-overlay">
+              <span
+                class="program-img-tag"
+                style="
+                  color: #ff6b6b;
+                  border-color: rgba(255, 107, 107, 0.3);
+                  background: rgba(255, 107, 107, 0.1);
+                "
+                >🎙️ Podcast & Talk</span
+              >
+            </div>
+          </div>
+          <div class="program-body">
+            <h3>Baffling Career Choices</h3>
+            <p>
+              KCC's "On The Run" live podcast — featuring industry leaders like
+              Enayet Chowdhury, Khalid Farhan & Sadman Sadik debating "Jack of
+              All Trade or Master of One?"
+            </p>
+            <span
+              class="program-tag"
+              style="color: #ff6b6b; border-color: rgba(255, 107, 107, 0.25)"
+              >Podcast</span
+            >
+          </div>
+        </div>
+        <div class="program-card reveal">
+          <div class="program-visual"></div>
+          <div class="program-img-wrap">
+            <img src="" alt="Grameenphone x KCC" class="program-real-img" />
+            <div class="program-img-overlay">
+              <span
+                class="program-img-tag"
+                style="
+                  color: #4fc3f7;
+                  border-color: rgba(79, 195, 247, 0.3);
+                  background: rgba(79, 195, 247, 0.1);
+                "
+                >🤝 Industry Partner</span
+              >
+            </div>
+          </div>
+          <div class="program-body">
+            <h3>Industry MoUs & Partnerships</h3>
+            <p>
+              KCC brings top brands like Grameenphone to KUET campus — including
+              the iconic ১লা বৈশাখ 2026 event at KUET Central Field. Strategic
+              MoUs with Interactive Cares and more.
+            </p>
+            <span
+              class="program-tag"
+              style="color: #4fc3f7; border-color: rgba(79, 195, 247, 0.25)"
+              >Partnership</span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services">
+      <div class="services-layout">
+        <div class="services-intro reveal">
+          <div class="section-label">What We Offer</div>
+          <h2 class="section-title">
+            Career<br />Enablement<br />at Every Stage
+          </h2>
+          <p class="section-sub">
+            KCC equips KUETians with the knowledge, connections, and skills
+            needed for every step of their career journey.
+          </p>
+          <a
+            href="#contact"
+            class="btn-primary"
+            style="display: inline-block; margin-top: 24px"
+            >Get Involved</a
+          >
+        </div>
+        <div class="services-list reveal">
+          <div class="service-item">
+            <div class="service-num">01</div>
+            <h4>Career Seminars</h4>
+            <p>
+              Industry leaders and KUET alumni speak on navigating careers in
+              engineering, tech, and public service.
+            </p>
+          </div>
+          <div class="service-item">
+            <div class="service-num">02</div>
+            <h4>BCS Preparation</h4>
+            <p>
+              Dedicated events, resources, and cadre interactions for students
+              aiming at Bangladesh Civil Service.
+            </p>
+          </div>
+          <div class="service-item">
+            <div class="service-num">03</div>
+            <h4>Leadership Training</h4>
+            <p>
+              Workshops and programs designed to build communication, teamwork,
+              and executive presence.
+            </p>
+          </div>
+          <div class="service-item">
+            <div class="service-num">04</div>
+            <h4>Higher Study Guidance</h4>
+            <p>
+              End-to-end support for GRE, TOEFL, SOP writing, and scholarship
+              applications worldwide.
+            </p>
+          </div>
+          <div class="service-item">
+            <div class="service-num">05</div>
+            <h4>Alumni Mentorship</h4>
+            <p>
+              Connect with successful KUETians in industry and academia for
+              one-on-one guidance.
+            </p>
+          </div>
+          <div class="service-item">
+            <div class="service-num">06</div>
+            <h4>Career Festivals</h4>
+            <p>
+              Annual mega-events bringing together recruiters, startups, and
+              KUETians in one place.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOURNEY / TIMELINE -->
+    <section id="journey">
+      <div class="journey-title-wrap reveal">
+        <div class="section-label" style="justify-content: center">
+          Your Path with KCC
+        </div>
+        <h2 class="section-title" style="text-align: center">
+          The KUETian Career Journey
+        </h2>
+      </div>
+      <div class="timeline reveal">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-step">Step 01</div>
+          <h4>Join KCC</h4>
+          <p>Become a member, attend orientation, meet your community</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-step">Step 02</div>
+          <h4>Explore</h4>
+          <p>Attend seminars, workshops, and career talks to find your path</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-step">Step 03</div>
+          <h4>Build Skills</h4>
+          <p>Participate in competitions, workshops, and leadership programs</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-step">Step 04</div>
+          <h4>Connect</h4>
+          <p>Network with alumni, industry partners, and mentors</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-step">Step 05</div>
+          <h4>Launch</h4>
+          <p>Graduate career-ready and join the KCC alumni network</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="contact-grid">
+        <div class="contact-info reveal">
+          <div class="section-label">Get In Touch</div>
+          <h2 class="section-title">Start Your<br />Career Journey</h2>
+          <p>
+            Have questions about joining KCC, upcoming events, or
+            collaborations? We'd love to hear from you.
+          </p>
+          <div class="contact-items">
+            <div class="contact-item">
+              <div class="contact-item-icon">📧</div>
+              kuetcareerclub@gmail.com
+            </div>
+            <div class="contact-item">
+              <div class="contact-item-icon">📞</div>
+              +880 1842-222493
+            </div>
+            <div class="contact-item">
+              <div class="contact-item-icon">📍</div>
+              KUET Campus, Khulna-9203, Bangladesh
+            </div>
+          </div>
+          <div class="social-links">
+            <a
+              href="https://facebook.com/kuetcareerclub"
+              class="social-link"
+              target="_blank"
+              >f</a
+            >
+            <a
+              href="https://youtube.com/c/KUETCareerClub"
+              class="social-link"
+              target="_blank"
+              >▶</a
+            >
+            <a
+              href="https://bd.linkedin.com/company/kuetcareerclub"
+              class="social-link"
+              target="_blank"
+              >in</a
+            >
+          </div>
+        </div>
+        <div class="contact-form reveal">
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" placeholder="Your name" />
+            </div>
+            <div class="form-group">
+              <label>Student ID</label>
+              <input type="text" placeholder="KUET ID" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="your@email.com" />
+          </div>
+          <div class="form-group">
+            <label>Department</label>
+            <select>
+              <option value="">Select your department</option>
+              <option>CSE</option>
+              <option>EEE</option>
+              <option>ECE</option>
+              <option>ME</option>
+              <option>CE</option>
+              <option>IPE</option>
+              <option>URP</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea
+              placeholder="Tell us why you want to join KCC or any questions you have..."
+            ></textarea>
+          </div>
+          <button class="form-submit" onclick="handleFormSubmit(this)">
+            Send Message →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>
+        © 2025 KUET Career Club · Khulna University of Engineering &amp;
+        Technology
+      </p>
+      <div class="footer-links">
+        <a href="#about"><span class="link-text">About</span></a>
+        <a href="#programs"><span class="link-text">Programs</span></a>
+        <a href="#contact"><span class="link-text">Contact</span></a>
+        <a href="mailto:kuetcareerclub@gmail.com">Email Us</a>
+      </div>
+    </footer>
+
+    <!-- CHATBOT -->
+    <button class="chat-trigger" id="chat-trigger" title="Chat with KCC Bot">
+      💬
+    </button>
+    <div class="chat-window" id="chat-window">
+      <div class="chat-header">
+        <div class="chat-avatar">KC</div>
+        <div class="chat-header-info">
+          <h4>KCC Assistant</h4>
+          <span>Ask me anything about KCC</span>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg bot">
+          <div class="msg-bot-icon">🤖</div>
+          <div class="msg-bubble">
+            Hello! I'm the KCC Assistant 👋 I can answer questions about KUET
+            Career Club — our events, how to join, programs, and more. What
+            would you like to know?
+          </div>
+        </div>
+      </div>
+      <div class="chat-quick-btns">
+        <button class="quick-btn" onclick="quickAsk('How do I join KCC?')">
+          How to join?
+        </button>
+        <button
+          class="quick-btn"
+          onclick="quickAsk('What events does KCC organize?')"
+        >
+          Events
+        </button>
+        <button class="quick-btn" onclick="quickAsk('Tell me about BizBash')">
+          BizBash
+        </button>
+        <button class="quick-btn" onclick="quickAsk('BCS preparation at KCC')">
+          BCS prep
+        </button>
+      </div>
+      <div class="chat-input-wrap">
+        <input
+          class="chat-input"
+          id="chat-input"
+          placeholder="Ask about KCC..."
+          type="text"
+        />
+        <button class="chat-send" id="chat-send" onclick="sendMessage()">
+          ➤
+        </button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
