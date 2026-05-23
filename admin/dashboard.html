@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — KCC Admin</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #05111a;
+        --surface: #081820;
+        --card: rgba(26, 144, 128, 0.04);
+        --card-border: rgba(26, 144, 128, 0.12);
+        --cyan: #1aaa90;
+        --gold: #f5c842;
+        --text: #d8eae6;
+        --muted: rgba(200, 230, 225, 0.5);
+        --heading: #e8f5f2;
+        --body-text: #a8cec8;
+        --accent-teal: #2de0bc;
+        --dim: rgba(180, 220, 215, 0.45);
+        --sidebar-w: 220px;
+      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+      }
+
+      /* ─── SIDEBAR ─── */
+      .sidebar {
+        width: var(--sidebar-w);
+        background: var(--surface);
+        border-right: 1px solid var(--card-border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 24px 20px;
+        border-bottom: 1px solid var(--card-border);
+        text-decoration: none;
+      }
+      .sidebar-logo-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid rgba(26, 170, 144, 0.3);
+        flex-shrink: 0;
+      }
+      .sidebar-logo-mark img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .sidebar-logo-text {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--text);
+        line-height: 1.2;
+      }
+      .sidebar-logo-text span {
+        display: block;
+        font-size: 9px;
+        color: var(--accent-teal);
+        font-weight: 400;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        padding: 20px 0;
+      }
+      .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 20px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: background 0.2s, color 0.2s;
+        border-left: 2px solid transparent;
+      }
+      .sidebar-nav a:hover {
+        background: rgba(26, 170, 144, 0.05);
+        color: var(--text);
+      }
+      .sidebar-nav a.active {
+        background: rgba(26, 170, 144, 0.08);
+        color: var(--accent-teal);
+        border-left-color: var(--accent-teal);
+      }
+      .sidebar-nav .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+      .sidebar-bottom {
+        padding: 20px;
+        border-top: 1px solid var(--card-border);
+      }
+      .logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-family: "DM Sans", sans-serif;
+        transition: color 0.2s;
+        padding: 0;
+      }
+      .logout-btn:hover { color: #ff8f9a; }
+
+      /* ─── MAIN ─── */
+      .main {
+        margin-left: var(--sidebar-w);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ─── TOPBAR ─── */
+      .topbar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--card-border);
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .topbar h1 {
+        font-family: "Syne", sans-serif;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--heading);
+      }
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .admin-badge {
+        background: rgba(26, 170, 144, 0.1);
+        border: 1px solid rgba(26, 170, 144, 0.2);
+        color: var(--accent-teal);
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+
+      /* ─── CONTENT ─── */
+      .content {
+        padding: 32px;
+        flex: 1;
+      }
+
+      /* ─── STATS CARDS ─── */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 24px 20px;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.3s, transform 0.3s;
+      }
+      .stat-card:hover {
+        border-color: rgba(26, 170, 144, 0.2);
+        transform: translateY(-3px);
+      }
+      .stat-card::after {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--cyan), transparent);
+      }
+      .stat-card.gold::after {
+        background: linear-gradient(90deg, var(--gold), transparent);
+      }
+      .stat-card.purple::after {
+        background: linear-gradient(90deg, #b06aff, transparent);
+      }
+      .stat-card.red::after {
+        background: linear-gradient(90deg, #ff6b6b, transparent);
+      }
+      .stat-icon {
+        font-size: 22px;
+        margin-bottom: 12px;
+      }
+      .stat-num {
+        font-family: "Syne", sans-serif;
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--heading);
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* ─── SECTION HEADER ─── */
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .section-header h2 {
+        font-family: "Syne", sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--heading);
+      }
+      .btn-small {
+        background: var(--cyan);
+        color: #06080f;
+        padding: 8px 16px;
+        border: none;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 3px;
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
+      .btn-small:hover { opacity: 0.85; }
+      .btn-outline {
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid var(--card-border);
+        padding: 8px 16px;
+        font-family: "Syne", sans-serif;
+        font-weight: 600;
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 3px;
+        text-decoration: none;
+        transition: border-color 0.2s, color 0.2s;
+      }
+      .btn-outline:hover {
+        border-color: rgba(200, 230, 225, 0.3);
+        color: var(--text);
+      }
+
+      /* ─── TABLE ─── */
+      .table-wrap {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 32px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead {
+        background: rgba(26, 170, 144, 0.05);
+        border-bottom: 1px solid var(--card-border);
+      }
+      th {
+        font-family: "Syne", sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--accent-teal);
+        padding: 12px 16px;
+        text-align: left;
+      }
+      td {
+        font-size: 13px;
+        color: var(--body-text);
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(26, 144, 128, 0.06);
+      }
+      tr:last-child td { border-bottom: none; }
+      tr:hover td { background: rgba(26, 170, 144, 0.03); }
+
+      .badge {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 2px;
+        border: 1px solid;
+      }
+      .badge.upcoming {
+        color: var(--accent-teal);
+        border-color: rgba(45, 224, 188, 0.25);
+        background: rgba(45, 224, 188, 0.07);
+      }
+      .badge.past {
+        color: var(--muted);
+        border-color: rgba(200, 230, 225, 0.12);
+        background: transparent;
+      }
+      .badge.visible {
+        color: #00e676;
+        border-color: rgba(0, 230, 118, 0.25);
+        background: rgba(0, 230, 118, 0.07);
+      }
+      .badge.hidden {
+        color: #ff8f9a;
+        border-color: rgba(255, 143, 154, 0.25);
+        background: rgba(255, 143, 154, 0.07);
+      }
+
+      .action-btns {
+        display: flex;
+        gap: 6px;
+      }
+      .act-btn {
+        background: transparent;
+        border: 1px solid var(--card-border);
+        color: var(--muted);
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        transition: all 0.2s;
+      }
+      .act-btn:hover { border-color: rgba(200,230,225,0.3); color: var(--text); }
+      .act-btn.danger:hover { border-color: rgba(255,95,109,0.4); color: #ff8f9a; }
+
+      /* ─── QUICK LINKS ─── */
+      .quick-links {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+      .quick-link {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 20px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      .quick-link:hover {
+        border-color: rgba(26, 170, 144, 0.2);
+        transform: translateY(-2px);
+      }
+      .quick-link-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+      .quick-link-text strong {
+        display: block;
+        font-family: "Syne", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--heading);
+        margin-bottom: 2px;
+      }
+      .quick-link-text span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a href="../index.html" class="sidebar-logo">
+        <div class="sidebar-logo-mark">
+          <img src="../images/lo.jpg" alt="KCC Logo" />
+        </div>
+        <div class="sidebar-logo-text">
+          KCC Admin
+          <span>Dashboard</span>
+        </div>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="active">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="events.html">
+          <span class="nav-icon">🗓</span> Events
+        </a>
+        <a href="registrations.html">
+          <span class="nav-icon">📋</span> Registrations
+        </a>
+        <a href="contacts.html">
+          <span class="nav-icon">✉️</span> Contact Forms
+        </a>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="logout-btn" onclick="logout()">
+          🚪 Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <h1>Dashboard</h1>
+        <div class="topbar-right">
+          <span>Welcome, Admin</span>
+          <span class="admin-badge">Admin</span>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="content">
+
+        <!-- STATS -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon">🗓</div>
+            <div class="stat-num">8</div>
+            <div class="stat-label">Total Events</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-icon">📋</div>
+            <div class="stat-num">124</div>
+            <div class="stat-label">Registrations</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-icon">✉️</div>
+            <div class="stat-num">37</div>
+            <div class="stat-label">Contact Forms</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-icon">🕐</div>
+            <div class="stat-num">2</div>
+            <div class="stat-label">Upcoming Events</div>
+          </div>
+        </div>
+
+        <!-- QUICK LINKS -->
+        <div class="section-header">
+          <h2>Quick Actions</h2>
+        </div>
+        <div class="quick-links">
+          <a href="events.html" class="quick-link">
+            <span class="quick-link-icon">➕</span>
+            <div class="quick-link-text">
+              <strong>Add New Event</strong>
+              <span>Create upcoming event</span>
+            </div>
+          </a>
+          <a href="registrations.html" class="quick-link">
+            <span class="quick-link-icon">📋</span>
+            <div class="quick-link-text">
+              <strong>View Registrations</strong>
+              <span>See who registered</span>
+            </div>
+          </a>
+          <a href="contacts.html" class="quick-link">
+            <span class="quick-link-icon">✉️</span>
+            <div class="quick-link-text">
+              <strong>Contact Submissions</strong>
+              <span>Join KCC form data</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- RECENT EVENTS TABLE -->
+        <div class="section-header">
+          <h2>Recent Events</h2>
+          <a href="events.html" class="btn-small">Manage All</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Event Name</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Visibility</th>
+                <th>Registrations</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>BizBattle 6.0</td>
+                <td>Jun 15, 2026</td>
+                <td><span class="badge upcoming">Upcoming</span></td>
+                <td><span class="badge visible">Visible</span></td>
+                <td>48</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="act-btn">Edit</button>
+                    <button class="act-btn danger">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>Study in Germany</td>
+                <td>Jul 5, 2026</td>
+                <td><span class="badge upcoming">Upcoming</span></td>
+                <td><span class="badge visible">Visible</span></td>
+                <td>76</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="act-btn">Edit</button>
+                    <button class="act-btn danger">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>BizBattle 5.0</td>
+                <td>Mar–Apr 2026</td>
+                <td><span class="badge past">Past</span></td>
+                <td><span class="badge visible">Visible</span></td>
+                <td>220</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="act-btn">Edit</button>
+                    <button class="act-btn danger">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>Campus2Career</td>
+                <td>2025</td>
+                <td><span class="badge past">Past</span></td>
+                <td><span class="badge hidden">Hidden</span></td>
+                <td>95</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="act-btn">Edit</button>
+                    <button class="act-btn danger">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- RECENT REGISTRATIONS -->
+        <div class="section-header">
+          <h2>Recent Registrations</h2>
+          <a href="registrations.html" class="btn-outline">View All</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Student ID</th>
+                <th>Department</th>
+                <th>Event</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Rafiul Islam</td>
+                <td>2103001</td>
+                <td>CSE</td>
+                <td>BizBattle 6.0</td>
+                <td>May 22, 2026</td>
+              </tr>
+              <tr>
+                <td>Nusrat Jahan</td>
+                <td>2003045</td>
+                <td>EEE</td>
+                <td>Study in Germany</td>
+                <td>May 21, 2026</td>
+              </tr>
+              <tr>
+                <td>Tanvir Ahmed</td>
+                <td>2203012</td>
+                <td>ME</td>
+                <td>BizBattle 6.0</td>
+                <td>May 20, 2026</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <script>
+      // Auth check
+      if (!sessionStorage.getItem("kcc_admin")) {
+        window.location.href = "login.html";
+      }
+
+      function logout() {
+        sessionStorage.removeItem("kcc_admin");
+        window.location.href = "login.html";
+      }
+    </script>
+  </body>
+</html>

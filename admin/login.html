@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login — KUET Career Club</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #05111a;
+        --surface: #081820;
+        --card: rgba(26, 144, 128, 0.04);
+        --card-border: rgba(26, 144, 128, 0.12);
+        --cyan: #1aaa90;
+        --gold: #f5c842;
+        --text: #d8eae6;
+        --muted: rgba(200, 230, 225, 0.5);
+        --heading: #e8f5f2;
+        --body-text: #a8cec8;
+        --accent-teal: #2de0bc;
+        --dim: rgba(180, 220, 215, 0.45);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* ─── BACKGROUND ─── */
+      .bg-grid {
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(26, 170, 144, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(26, 170, 144, 0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+      }
+      .bg-glow {
+        position: fixed;
+        top: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(26, 144, 128, 0.08) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      /* ─── LOGIN CARD ─── */
+      .login-wrap {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 420px;
+        padding: 20px;
+        animation: fadeUp 0.7s ease both;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .login-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 36px;
+        text-decoration: none;
+      }
+      .login-logo-mark {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1.5px solid rgba(26, 170, 144, 0.3);
+        flex-shrink: 0;
+      }
+      .login-logo-mark img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .login-logo-text {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 15px;
+        color: var(--text);
+        line-height: 1.2;
+      }
+      .login-logo-text span {
+        display: block;
+        font-size: 10px;
+        color: var(--muted);
+        font-weight: 400;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .login-card {
+        background: rgba(8, 24, 32, 0.8);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 40px 36px;
+        backdrop-filter: blur(20px);
+      }
+
+      .login-label {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--accent-teal);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .login-label::before {
+        content: "";
+        width: 20px;
+        height: 1px;
+        background: var(--accent-teal);
+      }
+
+      .login-card h2 {
+        font-family: "Syne", sans-serif;
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--heading);
+        margin-bottom: 28px;
+        line-height: 1.2;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+      }
+      .form-group label {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .form-group input {
+        background: rgba(26, 144, 128, 0.04);
+        border: 1px solid var(--card-border);
+        color: var(--text);
+        padding: 12px 16px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        border-radius: 4px;
+        outline: none;
+        transition: border-color 0.2s;
+        width: 100%;
+      }
+      .form-group input:focus {
+        border-color: rgba(26, 170, 144, 0.4);
+      }
+      .form-group input::placeholder {
+        color: var(--muted);
+      }
+
+      .login-btn {
+        width: 100%;
+        background: var(--cyan);
+        color: #06080f;
+        padding: 13px 28px;
+        border: none;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-top: 8px;
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+      }
+      .login-btn:hover {
+        opacity: 0.88;
+        transform: translateY(-2px);
+      }
+      .login-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .login-error {
+        background: rgba(255, 95, 109, 0.08);
+        border: 1px solid rgba(255, 95, 109, 0.2);
+        color: #ff8f9a;
+        font-size: 13px;
+        padding: 10px 14px;
+        border-radius: 4px;
+        margin-top: 14px;
+        display: none;
+      }
+      .login-error.show {
+        display: block;
+      }
+
+      .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 24px;
+        font-size: 12px;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .back-link:hover {
+        color: var(--accent-teal);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="login-wrap">
+      <a href="../index.html" class="login-logo">
+        <div class="login-logo-mark">
+          <img src="../images/lo.jpg" alt="KCC Logo" />
+        </div>
+        <div class="login-logo-text">
+          KUET Career Club
+          <span>Admin Panel</span>
+        </div>
+      </a>
+
+      <div class="login-card">
+        <div class="login-label">Secure Access</div>
+        <h2>Admin Login</h2>
+
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="username" placeholder="Enter username" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Enter password" />
+        </div>
+
+        <button class="login-btn" onclick="handleLogin(this)">Login →</button>
+
+        <div class="login-error" id="login-error">
+          ✕ Invalid username or password. Please try again.
+        </div>
+      </div>
+
+      <a href="../index.html" class="back-link">← Back to website</a>
+    </div>
+
+    <script>
+      // Temporary frontend-only login
+      // Later this will be replaced by ASP.NET controller
+      const ADMIN_USER = "alfi";
+      const ADMIN_PASS = "1234";
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Enter")
+          handleLogin(document.querySelector(".login-btn"));
+      });
+
+      function handleLogin(btn) {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const errorEl = document.getElementById("login-error");
+
+        if (!username || !password) {
+          errorEl.textContent = "✕ Please enter both username and password.";
+          errorEl.classList.add("show");
+          return;
+        }
+
+        btn.textContent = "Logging in...";
+        btn.disabled = true;
+        errorEl.classList.remove("show");
+
+        setTimeout(() => {
+          if (username === ADMIN_USER && password === ADMIN_PASS) {
+            sessionStorage.setItem("kcc_admin", "true");
+            window.location.href = "dashboard.html";
+          } else {
+            errorEl.textContent = "✕ Invalid username or password.";
+            errorEl.classList.add("show");
+            btn.textContent = "Login →";
+            btn.disabled = false;
+          }
+        }, 800);
+      }
+    </script>
+  </body>
+</html>
