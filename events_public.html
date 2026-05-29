@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Events Registration - KCC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .events-hero {
+            position: relative;
+            padding: 160px 5% 80px;
+            background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(13,90,79,0.15) 0%, transparent 65%), var(--bg);
+            overflow: hidden;
+        }
+
+            .events-hero::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background-image: linear-gradient(rgba(26,170,144,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(26,170,144,0.03) 1px, transparent 1px);
+                background-size: 60px 60px;
+                pointer-events: none;
+            }
+
+        .events-hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+        }
+
+        .events-hero h1 {
+            font-size: clamp(36px, 5vw, 64px);
+            font-weight: 800;
+            line-height: 1.05;
+            margin-bottom: 16px;
+            color: var(--heading);
+        }
+
+        .events-hero p {
+            font-size: 17px;
+            color: var(--body-text);
+            line-height: 1.7;
+        }
+
+        .events-tabs {
+            padding: 0 5%;
+            margin-top: 60px;
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-family: "Syne", sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 14px 24px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+            .tab-btn::after {
+                content: "";
+                position: absolute;
+                bottom: -1px;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: var(--cyan);
+                transform: scaleX(0);
+                transition: transform 0.25s;
+            }
+
+            .tab-btn.active {
+                color: var(--cyan);
+            }
+
+                .tab-btn.active::after {
+                    transform: scaleX(1);
+                }
+
+            .tab-btn:hover {
+                color: var(--text);
+            }
+
+        .events-section {
+            padding: 60px 5% 100px;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            align-items: start;
+        }
+
+        .event-card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .event-card:hover {
+                transform: translateY(-6px);
+                border-color: rgba(26,170,144,0.25);
+                box-shadow: 0 20px 50px rgba(13,90,79,0.25);
+            }
+
+        .event-img-wrap {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+            background: rgba(26,144,128,0.05);
+            flex-shrink: 0;
+        }
+
+            .event-img-wrap img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+                display: block;
+            }
+
+        .event-card:hover .event-img-wrap img {
+            transform: scale(1.06);
+        }
+
+        .event-img-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            background: linear-gradient(135deg, rgba(26,144,128,0.08), rgba(26,144,128,0.02));
+        }
+
+        .event-img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(6,8,15,0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 12px;
+        }
+
+        .event-badge {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 2px;
+            border: 1px solid;
+        }
+
+            .event-badge.upcoming {
+                color: var(--cyan);
+                border-color: rgba(26,170,144,0.4);
+                background: rgba(26,170,144,0.1);
+            }
+
+            .event-badge.past {
+                color: var(--muted);
+                border-color: rgba(200,230,225,0.15);
+                background: rgba(200,230,225,0.05);
+            }
+
+        .event-date-badge {
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 1px;
+        }
+
+        .event-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .event-body h3 {
+                font-size: 16px;
+                font-weight: 700;
+                color: var(--heading);
+                margin-bottom: 12px;
+                line-height: 1.3;
+            }
+
+        .event-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .event-meta span {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+            .event-meta span strong {
+                color: var(--body-text);
+                font-weight: 500;
+            }
+
+        .btn-register {
+            background: var(--cyan);
+            color: #06080f;
+            padding: 8px 16px;
+            border: none;
+            font-family: "Syne", sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .btn-register:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(26,170,144,0.3);
+            }
+
+        .loading-wrap {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted);
+        }
+
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--card-border);
+            border-top-color: var(--cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted);
+        }
+
+            .empty-state .empty-icon {
+                font-size: 48px;
+                margin-bottom: 20px;
+                opacity: 0.5;
+            }
+
+        .tab-panel {
+            display: none;
+        }
+
+            .tab-panel.active {
+                display: block;
+            }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5,17,26,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+            .modal-overlay.visible {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+        .modal {
+            background: #0c1824;
+            border: 1px solid rgba(26,170,144,0.15);
+            border-radius: 12px;
+            padding: 36px;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.visible .modal {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 20px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s, color 0.2s;
+        }
+
+            .modal-close:hover {
+                background: rgba(255,255,255,0.06);
+                color: var(--text);
+            }
+
+        .modal h3 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--heading);
+            margin-bottom: 6px;
+        }
+
+        .modal-event-name-display {
+            font-size: 12px;
+            color: var(--cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+            .form-group label {
+                font-size: 11px;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: var(--muted);
+            }
+
+            .form-group input, .form-group select {
+                background: rgba(26,144,128,0.04);
+                border: 1px solid var(--card-border);
+                color: var(--text);
+                padding: 11px 14px;
+                font-family: "DM Sans", sans-serif;
+                font-size: 14px;
+                border-radius: 3px;
+                outline: none;
+                transition: border-color 0.2s;
+                width: 100%;
+            }
+
+                .form-group input:focus, .form-group select:focus {
+                    border-color: rgba(26,170,144,0.4);
+                }
+
+                .form-group input::placeholder {
+                    color: var(--muted);
+                }
+
+                .form-group select option {
+                    background: #0c1824;
+                    color: var(--text);
+                }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-submit {
+            width: 100%;
+            background: var(--cyan);
+            color: #06080f;
+            padding: 12px 24px;
+            border: none;
+            font-family: "Syne", sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: opacity 0.2s;
+            margin-top: 8px;
+        }
+
+            .form-submit:hover {
+                opacity: 0.88;
+            }
+
+        .details-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .details-img-placeholder {
+            width: 100%;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            background: rgba(26,144,128,0.05);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mouse-canvas"></canvas>
+
+    <!-- NAV -->
+    <nav id="main-nav">
+        <a href="index.html" class="nav-logo">
+            <div class="nav-logo-mark"><img src="images/lo.jpg" alt="KCC Logo" /></div>
+            <div class="nav-logo-text">KUET Career Club <span>Est. KUET · Khulna</span></div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html#about"><span class="link-text">About</span></a></li>
+            <li><a href="events.html" style="color:var(--cyan)"><span class="link-text">Events</span></a></li>
+            <li><a href="index.html#services"><span class="link-text">Services</span></a></li>
+            <li><a href="index.html#journey"><span class="link-text">Journey</span></a></li>
+            <li><a href="index.html#contact"><span class="link-text">Contact</span></a></li>
+            <li><a href="index.html#contact" class="nav-cta">Join KCC</a></li>
+            <li><a href="admin/login.html" class="nav-login">Login</a></li>
+        </ul>
+        <button class="nav-hamburger" id="nav-hamburger" onclick="toggleNav()">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- HERO -->
+    <div class="events-hero">
+        <div class="events-hero-content reveal">
+            <div class="section-label">KCC Events</div>
+            <h1>Programs &amp; Events</h1>
+            <p>Explore upcoming opportunities and browse past events organized by KUET Career Club.</p>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="events-tabs">
+        <button class="tab-btn active" onclick="switchTab('upcoming', this)">🗓 Upcoming Events</button>
+        <button class="tab-btn" onclick="switchTab('past', this)">📁 Past Events</button>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="events-section">
+        <div class="tab-panel active" id="tab-upcoming">
+            <div class="events-grid" id="upcoming-grid">
+                <div class="loading-wrap"><div class="loading-spinner"></div><p>Loading events...</p></div>
+            </div>
+        </div>
+        <div class="tab-panel" id="tab-past">
+            <div class="events-grid" id="past-grid">
+                <div class="loading-wrap"><div class="loading-spinner"></div><p>Loading events...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 KUET Career Club · Khulna University of Engineering &amp; Technology</p>
+        <div class="footer-links">
+            <a href="index.html#about"><span class="link-text">About</span></a>
+            <a href="events.html"><span class="link-text">Events</span></a>
+            <a href="index.html#contact"><span class="link-text">Contact</span></a>
+            <a href="mailto:kuetcareerclub@gmail.com">Email Us</a>
+        </div>
+    </footer>
+
+    <!-- EVENT DETAILS MODAL -->
+    <div class="modal-overlay" id="details-modal">
+        <div class="modal" style="max-width:560px">
+            <button class="modal-close" onclick="closeDetails()">✕</button>
+            <div id="details-img-container"></div>
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:8px" id="details-status"></div>
+            <h3 id="details-title" style="margin-bottom:8px"></h3>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:16px" id="details-meta"></div>
+            <p id="details-desc" style="font-size:14px;color:var(--body-text);line-height:1.7;margin-bottom:24px;white-space:pre-line"></p>
+            <button id="details-reg-btn" class="form-submit" style="display:none" onclick="openRegisterFromDetails()">Register for this Event →</button>
+        </div>
+    </div>
+
+    <!-- REGISTER MODAL -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <button class="modal-close" onclick="closeRegister()">✕</button>
+            <h3>Event Registration</h3>
+            <p class="modal-event-name-display" id="modal-event-name">Event Name</p>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="reg-name" placeholder="Your full name" />
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input type="text" id="reg-id" placeholder="KUET ID" />
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <select id="reg-year">
+                        <option value="">Select year</option>
+                        <option>1st Year</option>
+                        <option>2nd Year</option>
+                        <option>3rd Year</option>
+                        <option>4th Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="reg-email" placeholder="your@email.com" />
+            </div>
+            <div class="form-group">
+                <label>Department</label>
+                <select id="reg-dept">
+                    <option value="">Select department</option>
+                    <option>CSE</option>
+                    <option>EEE</option>
+                    <option>ECE</option>
+                    <option>ME</option>
+                    <option>CE</option>
+                    <option>IPE</option>
+                    <option>URP</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <button class="form-submit" onclick="submitRegistration(this)">Confirm Registration →</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // NAV
+        const nav = document.getElementById("main-nav");
+        window.addEventListener("scroll", () => { nav.classList.toggle("scrolled", window.scrollY > 50); });
+
+        // REVEAL
+        const observer = new IntersectionObserver(
+            entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("in"); }),
+            { threshold: 0.1 }
+        );
+        document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
+        // DATE FORMATTER — handles ASP.NET /Date(...)/ format
+        function formatDate(d) {
+            if (!d) return "TBA";
+            try {
+                let date;
+                if (typeof d === "string" && d.indexOf("/Date(") !== -1) {
+                    var ms = parseInt(d.replace("/Date(", "").replace(")/", "").split("+")[0]);
+                    date = new Date(ms);
+                } else {
+                    date = new Date(d);
+                }
+                if (isNaN(date.getTime())) return "TBA";
+                return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+            } catch (e) {
+                return "TBA";
+            }
+        }
+
+        // LOAD EVENTS
+        function loadEvents() {
+            fetch("/api/GetEvents.ashx?type=upcoming")
+                .then(res => res.json())
+                .then(data => renderEvents(data, "upcoming-grid", "upcoming"))
+                .catch(() => showError("upcoming-grid"));
+
+            fetch("/api/GetEvents.ashx?type=past")
+                .then(res => res.json())
+                .then(data => renderEvents(data, "past-grid", "past"))
+                .catch(() => showError("past-grid"));
+        }
+
+        function renderEvents(events, gridId, type) {
+            const grid = document.getElementById(gridId);
+            if (!events || events.length === 0) {
+                grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>No ${type} events right now.</p></div>`;
+                return;
+            }
+            grid.innerHTML = events.map(ev => {
+                const safeEv = JSON.stringify(ev).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+                return `
+                <div class="event-card reveal" onclick="openDetails('${safeEv}')">
+                  <div class="event-img-wrap">
+                    ${ev.ImageUrl ? `<img src="${ev.ImageUrl}" alt="${ev.Title}" />` : `<div class="event-img-placeholder">🎯</div>`}
+                    <div class="event-img-overlay">
+                      <span class="event-badge ${type}">${type === 'upcoming' ? 'Upcoming' : 'Past'}</span>
+                      <span class="event-date-badge">${formatDate(ev.EventDate)}</span>
+                    </div>
+                  </div>
+                  <div class="event-body">
+                    <h3>${ev.Title}</h3>
+                    <div class="event-footer">
+                      <div class="event-meta">
+                        <span>📍 <strong>${ev.Location || 'KUET Campus'}</strong></span>
+                      </div>
+                      ${type === 'upcoming'
+                        ? `<button class="btn-register" onclick="event.stopPropagation();openRegister('${ev.Title.replace(/'/g, "\\'").replace(/"/g, '\\"')}')">Register →</button>`
+                        : `<span style="font-size:11px;color:var(--muted)">Click for details</span>`}
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join("");
+            document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+        }
+
+        function showError(gridId) {
+            document.getElementById(gridId).innerHTML =
+                `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Could not load events.</p></div>`;
+        }
+
+        // DETAILS MODAL
+        let currentEventTitle = "";
+
+        function openDetails(evStr) {
+            const ev = JSON.parse(evStr.replace(/&quot;/g, '"').replace(/&#39;/g, "'"));
+            currentEventTitle = ev.Title;
+            const imgContainer = document.getElementById("details-img-container");
+            imgContainer.innerHTML = ev.ImageUrl
+                ? `<img src="${ev.ImageUrl}" class="details-img" />`
+                : `<div class="details-img-placeholder">🎯</div>`;
+            document.getElementById("details-status").textContent = ev.Status === "upcoming" ? "🗓 Upcoming Event" : "✅ Past Event";
+            document.getElementById("details-title").textContent = ev.Title;
+            document.getElementById("details-meta").textContent = `📍 ${ev.Location || "KUET Campus"}   ·   📅 ${formatDate(ev.EventDate)}`;
+            document.getElementById("details-desc").textContent = ev.Description || "";
+            document.getElementById("details-reg-btn").style.display = ev.Status === "upcoming" ? "block" : "none";
+            document.getElementById("details-modal").classList.add("visible");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeDetails() {
+            document.getElementById("details-modal").classList.remove("visible");
+            document.body.style.overflow = "";
+        }
+
+        function openRegisterFromDetails() {
+            closeDetails();
+            openRegister(currentEventTitle);
+        }
+
+        // REGISTER MODAL
+        function openRegister(eventName) {
+            document.getElementById("modal-event-name").textContent = eventName;
+            document.getElementById("modal-overlay").classList.add("visible");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeRegister() {
+            document.getElementById("modal-overlay").classList.remove("visible");
+            document.body.style.overflow = "";
+        }
+
+        document.getElementById("modal-overlay").addEventListener("click", function (e) { if (e.target === this) closeRegister(); });
+        document.getElementById("details-modal").addEventListener("click", function (e) { if (e.target === this) closeDetails(); });
+
+        // TABS
+        function switchTab(tab, btn) {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById("tab-" + tab).classList.add("active");
+        }
+
+        // REGISTRATION SUBMIT
+        function submitRegistration(btn) {
+            const name = document.getElementById("reg-name").value.trim();
+            const id = document.getElementById("reg-id").value.trim();
+            const year = document.getElementById("reg-year").value;
+            const email = document.getElementById("reg-email").value.trim();
+            const dept = document.getElementById("reg-dept").value;
+            const eventName = document.getElementById("modal-event-name").textContent;
+
+            if (!name || !email || !dept) {
+                alert("Please fill in Name, Email and Department.");
+                return;
+            }
+
+            btn.textContent = "Submitting...";
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append("fullName", name);
+            formData.append("studentId", id);
+            formData.append("year", year);
+            formData.append("email", email);
+            formData.append("department", dept);
+            formData.append("eventName", eventName);
+
+            fetch("/api/RegisterEvent.ashx", { method: "POST", body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        btn.textContent = "✓ Registered!";
+                        btn.style.background = "#00e676";
+                        setTimeout(() => {
+                            closeRegister();
+                            btn.textContent = "Confirm Registration →";
+                            btn.disabled = false;
+                            btn.style.background = "";
+                        }, 2000);
+                    } else {
+                        alert("Error: " + data.message);
+                        btn.textContent = "Confirm Registration →";
+                        btn.disabled = false;
+                    }
+                })
+                .catch(() => {
+                    alert("Something went wrong.");
+                    btn.textContent = "Confirm Registration →";
+                    btn.disabled = false;
+                });
+        }
+
+        loadEvents();
+    </script>
+</body>
+</html>

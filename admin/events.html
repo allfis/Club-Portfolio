@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Events — KCC Admin</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #05111a;
+        --surface: #081820;
+        --card: rgba(26, 144, 128, 0.04);
+        --card-border: rgba(26, 144, 128, 0.12);
+        --cyan: #1aaa90;
+        --gold: #f5c842;
+        --text: #d8eae6;
+        --muted: rgba(200, 230, 225, 0.5);
+        --heading: #e8f5f2;
+        --body-text: #a8cec8;
+        --accent-teal: #2de0bc;
+        --dim: rgba(180, 220, 215, 0.45);
+        --sidebar-w: 220px;
+      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+      }
+
+      /* ─── SIDEBAR ─── */
+      .sidebar {
+        width: var(--sidebar-w);
+        background: var(--surface);
+        border-right: 1px solid var(--card-border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 24px 20px;
+        border-bottom: 1px solid var(--card-border);
+        text-decoration: none;
+      }
+      .sidebar-logo-mark {
+        width: 36px; height: 36px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid rgba(26, 170, 144, 0.3);
+        flex-shrink: 0;
+      }
+      .sidebar-logo-mark img { width: 100%; height: 100%; object-fit: cover; }
+      .sidebar-logo-text {
+        font-family: "Syne", sans-serif;
+        font-weight: 700; font-size: 13px;
+        color: var(--text); line-height: 1.2;
+      }
+      .sidebar-logo-text span {
+        display: block; font-size: 9px;
+        color: var(--accent-teal); font-weight: 400;
+        letter-spacing: 2px; text-transform: uppercase;
+      }
+      .sidebar-nav { flex: 1; padding: 20px 0; }
+      .sidebar-nav a {
+        display: flex; align-items: center; gap: 10px;
+        padding: 11px 20px;
+        color: var(--muted); text-decoration: none;
+        font-size: 13px; font-weight: 500;
+        transition: background 0.2s, color 0.2s;
+        border-left: 2px solid transparent;
+      }
+      .sidebar-nav a:hover { background: rgba(26,170,144,0.05); color: var(--text); }
+      .sidebar-nav a.active {
+        background: rgba(26,170,144,0.08);
+        color: var(--accent-teal);
+        border-left-color: var(--accent-teal);
+      }
+      .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+      .sidebar-bottom { padding: 20px; border-top: 1px solid var(--card-border); }
+      .logout-btn {
+        display: flex; align-items: center; gap: 8px;
+        color: var(--muted); font-size: 13px; cursor: pointer;
+        background: none; border: none;
+        font-family: "DM Sans", sans-serif;
+        transition: color 0.2s; padding: 0;
+      }
+      .logout-btn:hover { color: #ff8f9a; }
+
+      /* ─── MAIN ─── */
+      .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+      .topbar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--card-border);
+        padding: 16px 32px;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .topbar h1 { font-family: "Syne", sans-serif; font-size: 18px; font-weight: 800; color: var(--heading); }
+      .topbar-right { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); }
+      .admin-badge {
+        background: rgba(26,170,144,0.1); border: 1px solid rgba(26,170,144,0.2);
+        color: var(--accent-teal); font-size: 11px; padding: 4px 10px;
+        border-radius: 20px; font-weight: 600; letter-spacing: 1px;
+      }
+      .content { padding: 32px; flex: 1; }
+
+      /* ─── BUTTONS ─── */
+      .btn-primary {
+        background: var(--cyan); color: #06080f;
+        padding: 10px 20px; border: none;
+        font-family: "Syne", sans-serif; font-weight: 700;
+        font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+        cursor: pointer; border-radius: 4px;
+        transition: opacity 0.2s, transform 0.2s;
+      }
+      .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+      .btn-outline {
+        background: transparent; color: var(--muted);
+        border: 1px solid var(--card-border);
+        padding: 10px 20px;
+        font-family: "Syne", sans-serif; font-weight: 600;
+        font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+        cursor: pointer; border-radius: 4px;
+        transition: border-color 0.2s, color 0.2s;
+      }
+      .btn-outline:hover { border-color: rgba(200,230,225,0.3); color: var(--text); }
+
+      /* ─── SECTION HEADER ─── */
+      .section-header {
+        display: flex; align-items: center;
+        justify-content: space-between; margin-bottom: 20px;
+      }
+      .section-header h2 {
+        font-family: "Syne", sans-serif; font-size: 15px;
+        font-weight: 700; color: var(--heading);
+      }
+
+      /* ─── TABLE ─── */
+      .table-wrap {
+        background: var(--card); border: 1px solid var(--card-border);
+        border-radius: 8px; overflow: hidden; margin-bottom: 32px;
+      }
+      table { width: 100%; border-collapse: collapse; }
+      thead { background: rgba(26,170,144,0.05); border-bottom: 1px solid var(--card-border); }
+      th {
+        font-family: "Syne", sans-serif; font-size: 10px; font-weight: 700;
+        letter-spacing: 1.5px; text-transform: uppercase;
+        color: var(--accent-teal); padding: 12px 16px; text-align: left;
+      }
+      td {
+        font-size: 13px; color: var(--body-text);
+        padding: 12px 16px; border-bottom: 1px solid rgba(26,144,128,0.06);
+        vertical-align: middle;
+      }
+      tr:last-child td { border-bottom: none; }
+      tr:hover td { background: rgba(26,170,144,0.03); }
+
+      .badge {
+        font-size: 10px; font-weight: 700; letter-spacing: 1px;
+        text-transform: uppercase; padding: 3px 8px;
+        border-radius: 2px; border: 1px solid;
+      }
+      .badge.upcoming { color: var(--accent-teal); border-color: rgba(45,224,188,0.25); background: rgba(45,224,188,0.07); }
+      .badge.past { color: var(--muted); border-color: rgba(200,230,225,0.12); background: transparent; }
+      .badge.visible { color: #00e676; border-color: rgba(0,230,118,0.25); background: rgba(0,230,118,0.07); }
+      .badge.hidden { color: #ff8f9a; border-color: rgba(255,143,154,0.25); background: rgba(255,143,154,0.07); }
+
+      .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+      .act-btn {
+        background: transparent; border: 1px solid var(--card-border);
+        color: var(--muted); font-size: 11px; padding: 4px 10px;
+        border-radius: 3px; cursor: pointer;
+        font-family: "DM Sans", sans-serif; transition: all 0.2s;
+      }
+      .act-btn:hover { border-color: rgba(200,230,225,0.3); color: var(--text); }
+      .act-btn.danger:hover { border-color: rgba(255,95,109,0.4); color: #ff8f9a; }
+      .act-btn.success { color: #00e676; border-color: rgba(0,230,118,0.25); }
+      .act-btn.success:hover { background: rgba(0,230,118,0.07); }
+
+      /* ─── MODAL ─── */
+      .modal-overlay {
+        position: fixed; inset: 0;
+        background: rgba(5,17,26,0.88);
+        backdrop-filter: blur(8px);
+        z-index: 3000;
+        display: flex; align-items: center; justify-content: center;
+        padding: 20px; opacity: 0; pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .modal-overlay.visible { opacity: 1; pointer-events: all; }
+      .modal {
+        background: #0c1824;
+        border: 1px solid rgba(26,170,144,0.15);
+        border-radius: 12px; padding: 36px;
+        width: 100%; max-width: 560px;
+        position: relative;
+        transform: translateY(20px);
+        transition: transform 0.3s;
+        max-height: 90vh; overflow-y: auto;
+      }
+      .modal-overlay.visible .modal { transform: translateY(0); }
+      .modal-close {
+        position: absolute; top: 16px; right: 16px;
+        background: transparent; border: none;
+        color: var(--muted); font-size: 20px; cursor: pointer;
+        width: 32px; height: 32px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 50%; transition: background 0.2s, color 0.2s;
+      }
+      .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+      .modal h3 {
+        font-family: "Syne", sans-serif; font-size: 20px;
+        font-weight: 800; color: var(--heading); margin-bottom: 24px;
+      }
+      .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+      .form-group label {
+        font-size: 11px; letter-spacing: 1.5px;
+        text-transform: uppercase; color: var(--muted);
+      }
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        background: rgba(26,144,128,0.04);
+        border: 1px solid var(--card-border);
+        color: var(--text); padding: 11px 14px;
+        font-family: "DM Sans", sans-serif; font-size: 14px;
+        border-radius: 4px; outline: none;
+        transition: border-color 0.2s; width: 100%;
+      }
+      .form-group input:focus,
+      .form-group textarea:focus,
+      .form-group select:focus { border-color: rgba(26,170,144,0.4); }
+      .form-group input::placeholder,
+      .form-group textarea::placeholder { color: var(--muted); }
+      .form-group textarea { resize: vertical; min-height: 90px; }
+      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .form-submit {
+        background: var(--cyan); color: #06080f;
+        padding: 12px 24px; border: none;
+        font-family: "Syne", sans-serif; font-weight: 700;
+        font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+        cursor: pointer; border-radius: 4px;
+        transition: opacity 0.2s; margin-top: 8px;
+      }
+      .form-submit:hover { opacity: 0.88; }
+
+      /* ─── CONFIRM MODAL ─── */
+      .confirm-modal {
+        background: #0c1824;
+        border: 1px solid rgba(255,95,109,0.2);
+        border-radius: 12px; padding: 32px;
+        width: 100%; max-width: 380px;
+        text-align: center;
+        transform: translateY(20px);
+        transition: transform 0.3s;
+      }
+      .modal-overlay.visible .confirm-modal { transform: translateY(0); }
+      .confirm-modal h3 {
+        font-family: "Syne", sans-serif; font-size: 18px;
+        font-weight: 800; color: var(--heading); margin-bottom: 10px;
+      }
+      .confirm-modal p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+      .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+      .btn-danger {
+        background: #ff5f6d; color: white;
+        padding: 10px 24px; border: none;
+        font-family: "Syne", sans-serif; font-weight: 700;
+        font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+        cursor: pointer; border-radius: 4px;
+        transition: opacity 0.2s;
+      }
+      .btn-danger:hover { opacity: 0.88; }
+        .form-group select option {
+            background: #0c1824;
+            color: var(--text);
+        }
+    </style>
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a href="../index.html" class="sidebar-logo">
+        <div class="sidebar-logo-mark">
+          <img src="../images/lo.jpg" alt="KCC Logo" />
+        </div>
+        <div class="sidebar-logo-text">
+          KCC Admin
+          <span>Events</span>
+        </div>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="events.html" class="active"><span class="nav-icon">🗓</span> Events</a>
+        <a href="registrations.html"><span class="nav-icon">📋</span> Registrations</a>
+        <a href="contacts.html"><span class="nav-icon">✉️</span> Contact Forms</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <h1>Manage Events</h1>
+        <div class="topbar-right">
+          <span>Welcome, Admin</span>
+          <span class="admin-badge">Admin</span>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="section-header">
+          <h2>All Events</h2>
+          <button class="btn-primary" onclick="openAddModal()">+ Add New Event</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Event Name</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Visibility</th>
+                <th>Registrations</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="events-table">
+              <!-- Rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD / EDIT MODAL -->
+    <div class="modal-overlay" id="event-modal">
+      <div class="modal">
+        <button class="modal-close" onclick="closeModal('event-modal')">✕</button>
+        <h3 id="modal-title">Add New Event</h3>
+
+        <div class="form-group">
+          <label>Event Title</label>
+          <input type="text" id="ev-title" placeholder="e.g. BizBattle 6.0" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="ev-desc" placeholder="Brief description of the event..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Event Date</label>
+            <input type="date" id="ev-date" />
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="ev-location" placeholder="e.g. KUET Auditorium" />
+          </div>
+        </div>
+        <div class="form-row" >
+          <div class="form-group">
+            <label>Status</label>
+            <select id="ev-status">
+              <option value="upcoming">Upcoming</option>
+              <option value="past">Past</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Visibility</label>
+            <select id="ev-visibility">
+              <option value="visible">Visible</option>
+              <option value="hidden">Hidden</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Event Image</label>
+          <input type="file" id="ev-image" accept="image/*" style="padding: 8px 14px;" />
+        </div>
+
+        <button class="form-submit" onclick="saveEvent(this)">Save Event →</button>
+      </div>
+    </div>
+
+    <!-- DELETE CONFIRM MODAL -->
+    <div class="modal-overlay" id="delete-modal">
+      <div class="confirm-modal">
+        <h3>Delete Event?</h3>
+        <p>This will permanently delete the event and all its registrations. This cannot be undone.</p>
+        <div class="confirm-btns">
+          <button class="btn-outline" onclick="closeModal('delete-modal')">Cancel</button>
+          <button class="btn-danger" onclick="confirmDelete()">Yes, Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      if (!sessionStorage.getItem("kcc_admin")) window.location.href = "login.html";
+      function logout() { sessionStorage.removeItem("kcc_admin"); window.location.href = "login.html"; }
+
+        let events = [];
+        let editingId = null;
+        let deletingId = null;
+
+        // ─── LOAD FROM DB ───
+        function loadEvents() {
+            fetch("/api/GetEvents.ashx?type=admin")
+                .then(res => res.json())
+                .then(data => {
+                    events = data.map(e => ({
+                        id: e.Id,
+                        title: e.Title,
+                        date: e.EventDate ? e.EventDate.split("T")[0] : "",
+                        location: e.Location || "",
+                        desc: e.Description || "",
+                        status: e.Status,
+                        visibility: e.Visibility,
+                        regs: 0
+                    }));
+                    renderTable();
+                })
+                .catch(() => {
+                    console.error("Failed to load events");
+                    renderTable();
+                });
+        }
+
+      function renderTable() {
+        const tbody = document.getElementById("events-table");
+        tbody.innerHTML = events.map(ev => `
+          <tr>
+            <td><strong style="color:var(--heading)">${ev.title}</strong></td>
+            <td>${formatDate(ev.date)}</td>
+            <td><span class="badge ${ev.status}">${ev.status}</span></td>
+            <td><span class="badge ${ev.visibility}">${ev.visibility}</span></td>
+            <td>${ev.regs}</td>
+            <td>
+              <div class="action-btns">
+                <button class="act-btn" onclick="openEditModal(${ev.id})">Edit</button>
+                <button class="act-btn danger" onclick="openDeleteModal(${ev.id})">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      function formatDate(d) {
+        if (!d) return "—";
+        const date = new Date(d);
+        return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+      }
+
+      // ─── ADD MODAL ───
+      function openAddModal() {
+        editingId = null;
+        document.getElementById("modal-title").textContent = "Add New Event";
+        document.getElementById("ev-title").value = "";
+        document.getElementById("ev-desc").value = "";
+        document.getElementById("ev-date").value = "";
+        document.getElementById("ev-location").value = "";
+        document.getElementById("ev-status").value = "upcoming";
+        document.getElementById("ev-visibility").value = "visible";
+        document.getElementById("event-modal").classList.add("visible");
+        document.body.style.overflow = "hidden";
+      }
+
+      // ─── EDIT MODAL ───
+      function openEditModal(id) {
+        const ev = events.find(e => e.id === id);
+        if (!ev) return;
+        editingId = id;
+        document.getElementById("modal-title").textContent = "Edit Event";
+        document.getElementById("ev-title").value = ev.title;
+        document.getElementById("ev-desc").value = ev.desc;
+        document.getElementById("ev-date").value = ev.date;
+        document.getElementById("ev-location").value = ev.location;
+        document.getElementById("ev-status").value = ev.status;
+        document.getElementById("ev-visibility").value = ev.visibility;
+        document.getElementById("event-modal").classList.add("visible");
+        document.body.style.overflow = "hidden";
+      }
+
+      // ─── SAVE ───
+      function saveEvent(btn) {
+        const title = document.getElementById("ev-title").value.trim();
+        const desc = document.getElementById("ev-desc").value.trim();
+        const date = document.getElementById("ev-date").value;
+        const location = document.getElementById("ev-location").value.trim();
+        const status = document.getElementById("ev-status").value;
+        const visibility = document.getElementById("ev-visibility").value;
+
+        if (!title || !date) { alert("Please fill in Event Title and Date."); return; }
+
+        btn.textContent = "Saving...";
+        btn.disabled = true;
+
+          const formData = new FormData();
+          formData.append("id", editingId || "0");
+          formData.append("title", title);
+          formData.append("description", desc);
+          formData.append("date", date);
+          formData.append("location", location);
+          formData.append("status", status);
+          formData.append("visibility", visibility);
+
+          fetch("/api/SaveEvent.ashx", {
+              method: "POST",
+              body: formData
+          })
+              .then(res => res.json())
+              .then(data => {
+                  if (data.success) {
+                      loadEvents();
+                      closeModal("event-modal");
+                  } else {
+                      alert("Error: " + data.message);
+                  }
+                  btn.textContent = "Save Event →";
+                  btn.disabled = false;
+              })
+              .catch(() => {
+                  alert("Something went wrong.");
+                  btn.textContent = "Save Event →";
+                  btn.disabled = false;
+              });
+      }
+
+      // ─── TOGGLE VISIBILITY ───
+        function toggleVisibility(id) {
+            const formData = new FormData();
+            formData.append("type", "toggleVisibility");
+            formData.append("id", id);
+            fetch("/api/SaveEvent.ashx", {
+                method: "POST",
+                body: formData
+            })
+                .then(() => loadEvents())
+                .catch(() => alert("Something went wrong."));
+        }
+
+      // ─── DELETE ───
+      function openDeleteModal(id) {
+        deletingId = id;
+        document.getElementById("delete-modal").classList.add("visible");
+        document.body.style.overflow = "hidden";
+      }
+        function confirmDelete() {
+            const formData = new FormData();
+            formData.append("type", "event");
+            formData.append("id", deletingId);
+            fetch("/api/DeleteItem.ashx", {
+                method: "POST",
+                body: formData
+            })
+                .then(() => {
+                    loadEvents();
+                    closeModal("delete-modal");
+                })
+                .catch(() => alert("Something went wrong."));
+        }
+
+      // ─── CLOSE MODAL ───
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("visible");
+        document.body.style.overflow = "";
+      }
+      document.querySelectorAll(".modal-overlay").forEach(m => {
+        m.addEventListener("click", function(e) {
+          if (e.target === this) closeModal(this.id);
+        });
+      });
+
+        loadEvents();
+    </script>
+  </body>
+</html>

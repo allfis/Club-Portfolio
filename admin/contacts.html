@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Forms — KCC Admin</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #05111a;
+        --surface: #081820;
+        --card: rgba(26, 144, 128, 0.04);
+        --card-border: rgba(26, 144, 128, 0.12);
+        --cyan: #1aaa90;
+        --gold: #f5c842;
+        --text: #d8eae6;
+        --muted: rgba(200, 230, 225, 0.5);
+        --heading: #e8f5f2;
+        --body-text: #a8cec8;
+        --accent-teal: #2de0bc;
+        --dim: rgba(180, 220, 215, 0.45);
+        --sidebar-w: 220px;
+      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+
+      /* ─── SIDEBAR ─── */
+      .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--card-border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+      .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid var(--card-border); text-decoration: none; }
+      .sidebar-logo-mark { width: 36px; height: 36px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(26,170,144,0.3); flex-shrink: 0; }
+      .sidebar-logo-mark img { width: 100%; height: 100%; object-fit: cover; }
+      .sidebar-logo-text { font-family: "Syne", sans-serif; font-weight: 700; font-size: 13px; color: var(--text); line-height: 1.2; }
+      .sidebar-logo-text span { display: block; font-size: 9px; color: var(--accent-teal); font-weight: 400; letter-spacing: 2px; text-transform: uppercase; }
+      .sidebar-nav { flex: 1; padding: 20px 0; }
+      .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 11px 20px; color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: background 0.2s, color 0.2s; border-left: 2px solid transparent; }
+      .sidebar-nav a:hover { background: rgba(26,170,144,0.05); color: var(--text); }
+      .sidebar-nav a.active { background: rgba(26,170,144,0.08); color: var(--accent-teal); border-left-color: var(--accent-teal); }
+      .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+      .sidebar-bottom { padding: 20px; border-top: 1px solid var(--card-border); }
+      .logout-btn { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; cursor: pointer; background: none; border: none; font-family: "DM Sans", sans-serif; transition: color 0.2s; padding: 0; }
+      .logout-btn:hover { color: #ff8f9a; }
+
+      /* ─── MAIN ─── */
+      .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+      .topbar { background: var(--surface); border-bottom: 1px solid var(--card-border); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+      .topbar h1 { font-family: "Syne", sans-serif; font-size: 18px; font-weight: 800; color: var(--heading); }
+      .topbar-right { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); }
+      .admin-badge { background: rgba(26,170,144,0.1); border: 1px solid rgba(26,170,144,0.2); color: var(--accent-teal); font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; letter-spacing: 1px; }
+      .content { padding: 32px; flex: 1; }
+
+      /* ─── STATS ─── */
+      .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+      .stat-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; position: relative; overflow: hidden; }
+      .stat-card::after { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--cyan), transparent); }
+      .stat-card.gold::after { background: linear-gradient(90deg, var(--gold), transparent); }
+      .stat-card.purple::after { background: linear-gradient(90deg, #b06aff, transparent); }
+      .stat-num { font-family: "Syne", sans-serif; font-size: 28px; font-weight: 800; color: var(--heading); line-height: 1; margin-bottom: 4px; }
+      .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+      /* ─── FILTERS ─── */
+      .filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+      .filters-left { display: flex; gap: 12px; flex-wrap: wrap; }
+      .filter-select { background: var(--card); border: 1px solid var(--card-border); color: var(--text); padding: 9px 14px; font-family: "DM Sans", sans-serif; font-size: 13px; border-radius: 4px; outline: none; transition: border-color 0.2s; cursor: pointer; }
+      .filter-select:focus { border-color: rgba(26,170,144,0.4); }
+      .search-input { background: var(--card); border: 1px solid var(--card-border); color: var(--text); padding: 9px 14px; font-family: "DM Sans", sans-serif; font-size: 13px; border-radius: 4px; outline: none; transition: border-color 0.2s; width: 220px; }
+      .search-input:focus { border-color: rgba(26,170,144,0.4); }
+      .search-input::placeholder { color: var(--muted); }
+      .btn-export { background: transparent; border: 1px solid var(--card-border); color: var(--muted); padding: 9px 18px; font-family: "Syne", sans-serif; font-weight: 600; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: border-color 0.2s, color 0.2s; }
+      .btn-export:hover { border-color: rgba(200,230,225,0.3); color: var(--text); }
+
+      /* ─── TABLE ─── */
+      .table-wrap { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; overflow: hidden; }
+      table { width: 100%; border-collapse: collapse; }
+      thead { background: rgba(26,170,144,0.05); border-bottom: 1px solid var(--card-border); }
+      th { font-family: "Syne", sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent-teal); padding: 12px 16px; text-align: left; }
+      td { font-size: 13px; color: var(--body-text); padding: 12px 16px; border-bottom: 1px solid rgba(26,144,128,0.06); vertical-align: middle; }
+      tr:last-child td { border-bottom: none; }
+      tr:hover td { background: rgba(26,170,144,0.03); }
+      .empty-row td { text-align: center; color: var(--muted); padding: 40px; font-size: 14px; }
+
+      .act-btn { background: transparent; border: 1px solid var(--card-border); color: var(--muted); font-size: 11px; padding: 4px 10px; border-radius: 3px; cursor: pointer; font-family: "DM Sans", sans-serif; transition: all 0.2s; }
+      .act-btn:hover { border-color: rgba(200,230,225,0.3); color: var(--text); }
+      .act-btn.danger:hover { border-color: rgba(255,95,109,0.4); color: #ff8f9a; }
+
+      /* ─── VIEW MODAL ─── */
+      .modal-overlay { position: fixed; inset: 0; background: rgba(5,17,26,0.88); backdrop-filter: blur(8px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+      .modal-overlay.visible { opacity: 1; pointer-events: all; }
+      .modal { background: #0c1824; border: 1px solid rgba(26,170,144,0.15); border-radius: 12px; padding: 36px; width: 100%; max-width: 500px; position: relative; transform: translateY(20px); transition: transform 0.3s; max-height: 90vh; overflow-y: auto; }
+      .modal-overlay.visible .modal { transform: translateY(0); }
+      .modal-close { position: absolute; top: 16px; right: 16px; background: transparent; border: none; color: var(--muted); font-size: 20px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s, color 0.2s; }
+      .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+      .modal h3 { font-family: "Syne", sans-serif; font-size: 18px; font-weight: 800; color: var(--heading); margin-bottom: 20px; }
+      .detail-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--card-border); }
+      .detail-row:last-of-type { border-bottom: none; }
+      .detail-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent-teal); }
+      .detail-value { font-size: 14px; color: var(--text); line-height: 1.6; }
+
+      /* ─── CONFIRM MODAL ─── */
+      .confirm-modal { background: #0c1824; border: 1px solid rgba(255,95,109,0.2); border-radius: 12px; padding: 32px; width: 100%; max-width: 380px; text-align: center; transform: translateY(20px); transition: transform 0.3s; }
+      .modal-overlay.visible .confirm-modal { transform: translateY(0); }
+      .confirm-modal h3 { font-family: "Syne", sans-serif; font-size: 18px; font-weight: 800; color: var(--heading); margin-bottom: 10px; }
+      .confirm-modal p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+      .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+      .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--card-border); padding: 10px 24px; font-family: "Syne", sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: border-color 0.2s, color 0.2s; }
+      .btn-outline:hover { border-color: rgba(200,230,225,0.3); color: var(--text); }
+      .btn-danger { background: #ff5f6d; color: white; padding: 10px 24px; border: none; font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: opacity 0.2s; }
+      .btn-danger:hover { opacity: 0.88; }
+    </style>
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a href="../index.html" class="sidebar-logo">
+        <div class="sidebar-logo-mark">
+          <img src="../images/lo.jpg" alt="KCC Logo" />
+        </div>
+        <div class="sidebar-logo-text">KCC Admin <span>Contact Forms</span></div>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="events.html"><span class="nav-icon">🗓</span> Events</a>
+        <a href="registrations.html"><span class="nav-icon">📋</span> Registrations</a>
+        <a href="contacts.html" class="active"><span class="nav-icon">✉️</span> Contact Forms</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <h1>Contact Forms</h1>
+        <div class="topbar-right">
+          <span>Welcome, Admin</span>
+          <span class="admin-badge">Admin</span>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- STATS -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-num" id="total-count">0</div>
+            <div class="stat-label">Total Submissions</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-num" id="dept-count">0</div>
+            <div class="stat-label">Departments</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-num" id="today-count">0</div>
+            <div class="stat-label">This Month</div>
+          </div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filters">
+          <div class="filters-left">
+            <select class="filter-select" id="filter-dept" onchange="applyFilters()">
+              <option value="">All Departments</option>
+              <option>CSE</option><option>EEE</option><option>ECE</option>
+              <option>ME</option><option>CE</option><option>IPE</option>
+              <option>URP</option><option>Other</option>
+            </select>
+            <input class="search-input" id="search-input" placeholder="Search by name or email..." oninput="applyFilters()" />
+          </div>
+          <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Full Name</th>
+                <th>Student ID</th>
+                <th>Department</th>
+                <th>Email</th>
+                <th>Submitted</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="contacts-table"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VIEW MODAL -->
+    <div class="modal-overlay" id="view-modal">
+      <div class="modal">
+        <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
+        <h3>Submission Details</h3>
+        <div class="detail-row">
+          <div class="detail-label">Full Name</div>
+          <div class="detail-value" id="d-name"></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Student ID</div>
+          <div class="detail-value" id="d-id"></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Department</div>
+          <div class="detail-value" id="d-dept"></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Email</div>
+          <div class="detail-value" id="d-email"></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Message</div>
+          <div class="detail-value" id="d-msg"></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Submitted On</div>
+          <div class="detail-value" id="d-date"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DELETE CONFIRM -->
+    <div class="modal-overlay" id="delete-modal">
+      <div class="confirm-modal">
+        <h3>Delete Submission?</h3>
+        <p>This will permanently remove this contact form submission.</p>
+        <div class="confirm-btns">
+          <button class="btn-outline" onclick="closeModal('delete-modal')">Cancel</button>
+          <button class="btn-danger" onclick="confirmDelete()">Yes, Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      if (!sessionStorage.getItem("kcc_admin")) window.location.href = "login.html";
+      function logout() { sessionStorage.removeItem("kcc_admin"); window.location.href = "login.html"; }
+
+      // ─── SAMPLE DATA (replace with DB later) ───
+      let contacts = [
+        { id: 1, name: "Sakib Hossain", studentId: "2203011", dept: "CSE", email: "sakib@kuet.ac.bd", message: "I want to join KCC and contribute to organizing career events for juniors.", date: "2026-05-22" },
+        { id: 2, name: "Lamia Sultana", studentId: "2103044", dept: "EEE", email: "lamia@kuet.ac.bd", message: "I am interested in the BCS preparation wing of KCC. Please let me know how to join.", date: "2026-05-21" },
+        { id: 3, name: "Arif Rahman", studentId: "2003030", dept: "ME", email: "arif@kuet.ac.bd", message: "Looking forward to joining KCC for the higher study guidance program.", date: "2026-05-20" },
+        { id: 4, name: "Tasnim Akter", studentId: "2203078", dept: "CE", email: "tasnim@kuet.ac.bd", message: "I heard about KCC from my senior. Would love to be part of the club.", date: "2026-05-19" },
+        { id: 5, name: "Nazmul Haque", studentId: "1903015", dept: "IPE", email: "nazmul@kuet.ac.bd", message: "Any collaboration opportunities between KCC and the entrepreneurship club?", date: "2026-05-15" },
+        { id: 6, name: "Riya Biswas", studentId: "2103062", dept: "URP", email: "riya@kuet.ac.bd", message: "I want to volunteer for the next BizBattle event.", date: "2026-05-10" },
+      ];
+
+      let deletingId = null;
+      let filtered = [...contacts];
+
+      function updateStats() {
+        document.getElementById("total-count").textContent = contacts.length;
+        document.getElementById("dept-count").textContent = new Set(contacts.map(c => c.dept)).size;
+        const thisMonth = contacts.filter(c => new Date(c.date).getMonth() === new Date().getMonth()).length;
+        document.getElementById("today-count").textContent = thisMonth;
+      }
+
+      function applyFilters() {
+        const dept = document.getElementById("filter-dept").value;
+        const search = document.getElementById("search-input").value.toLowerCase();
+        filtered = contacts.filter(c => {
+          const matchDept = !dept || c.dept === dept;
+          const matchSearch = !search || c.name.toLowerCase().includes(search) || c.email.toLowerCase().includes(search);
+          return matchDept && matchSearch;
+        });
+        renderTable();
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById("contacts-table");
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No submissions found.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = filtered.map((c, i) => `
+          <tr>
+            <td style="color:var(--dim)">${i + 1}</td>
+            <td><strong style="color:var(--heading)">${c.name}</strong></td>
+            <td>${c.studentId}</td>
+            <td>${c.dept}</td>
+            <td>${c.email}</td>
+            <td style="color:var(--dim)">${formatDate(c.date)}</td>
+            <td>
+              <div style="display:flex;gap:6px">
+                <button class="act-btn" onclick="viewDetail(${c.id})">View</button>
+                <button class="act-btn danger" onclick="openDelete(${c.id})">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      function formatDate(d) {
+        if (!d) return "—";
+        return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+      }
+
+      function viewDetail(id) {
+        const c = contacts.find(x => x.id === id);
+        if (!c) return;
+        document.getElementById("d-name").textContent = c.name;
+        document.getElementById("d-id").textContent = c.studentId;
+        document.getElementById("d-dept").textContent = c.dept;
+        document.getElementById("d-email").textContent = c.email;
+        document.getElementById("d-msg").textContent = c.message;
+        document.getElementById("d-date").textContent = formatDate(c.date);
+        document.getElementById("view-modal").classList.add("visible");
+        document.body.style.overflow = "hidden";
+      }
+
+      function openDelete(id) {
+        deletingId = id;
+        document.getElementById("delete-modal").classList.add("visible");
+        document.body.style.overflow = "hidden";
+      }
+
+      function confirmDelete() {
+        contacts = contacts.filter(c => c.id !== deletingId);
+        filtered = filtered.filter(c => c.id !== deletingId);
+        updateStats();
+        renderTable();
+        closeModal("delete-modal");
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("visible");
+        document.body.style.overflow = "";
+      }
+
+      document.querySelectorAll(".modal-overlay").forEach(m => {
+        m.addEventListener("click", function(e) {
+          if (e.target === this) closeModal(this.id);
+        });
+      });
+
+      function exportCSV() {
+        const headers = ["#", "Name", "Student ID", "Dept", "Email", "Message", "Date"];
+        const rows = filtered.map((c, i) => [i+1, c.name, c.studentId, c.dept, c.email, `"${c.message}"`, c.date]);
+        const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "kcc_contacts.csv";
+        a.click(); URL.revokeObjectURL(url);
+      }
+
+      updateStats();
+      renderTable();
+    </script>
+  </body>
+</html>

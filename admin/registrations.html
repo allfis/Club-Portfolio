@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrations — KCC Admin</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #05111a;
+        --surface: #081820;
+        --card: rgba(26, 144, 128, 0.04);
+        --card-border: rgba(26, 144, 128, 0.12);
+        --cyan: #1aaa90;
+        --gold: #f5c842;
+        --text: #d8eae6;
+        --muted: rgba(200, 230, 225, 0.5);
+        --heading: #e8f5f2;
+        --body-text: #a8cec8;
+        --accent-teal: #2de0bc;
+        --dim: rgba(180, 220, 215, 0.45);
+        --sidebar-w: 220px;
+      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+
+      /* ─── SIDEBAR ─── */
+      .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--card-border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+      .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid var(--card-border); text-decoration: none; }
+      .sidebar-logo-mark { width: 36px; height: 36px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(26,170,144,0.3); flex-shrink: 0; }
+      .sidebar-logo-mark img { width: 100%; height: 100%; object-fit: cover; }
+      .sidebar-logo-text { font-family: "Syne", sans-serif; font-weight: 700; font-size: 13px; color: var(--text); line-height: 1.2; }
+      .sidebar-logo-text span { display: block; font-size: 9px; color: var(--accent-teal); font-weight: 400; letter-spacing: 2px; text-transform: uppercase; }
+      .sidebar-nav { flex: 1; padding: 20px 0; }
+      .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 11px 20px; color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: background 0.2s, color 0.2s; border-left: 2px solid transparent; }
+      .sidebar-nav a:hover { background: rgba(26,170,144,0.05); color: var(--text); }
+      .sidebar-nav a.active { background: rgba(26,170,144,0.08); color: var(--accent-teal); border-left-color: var(--accent-teal); }
+      .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+      .sidebar-bottom { padding: 20px; border-top: 1px solid var(--card-border); }
+      .logout-btn { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; cursor: pointer; background: none; border: none; font-family: "DM Sans", sans-serif; transition: color 0.2s; padding: 0; }
+      .logout-btn:hover { color: #ff8f9a; }
+
+      /* ─── MAIN ─── */
+      .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+      .topbar { background: var(--surface); border-bottom: 1px solid var(--card-border); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+      .topbar h1 { font-family: "Syne", sans-serif; font-size: 18px; font-weight: 800; color: var(--heading); }
+      .topbar-right { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); }
+      .admin-badge { background: rgba(26,170,144,0.1); border: 1px solid rgba(26,170,144,0.2); color: var(--accent-teal); font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; letter-spacing: 1px; }
+      .content { padding: 32px; flex: 1; }
+
+      /* ─── FILTERS ─── */
+      .filters {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .filters-left { display: flex; gap: 12px; flex-wrap: wrap; }
+      .filter-select {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        color: var(--text);
+        padding: 9px 14px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        border-radius: 4px;
+        outline: none;
+        transition: border-color 0.2s;
+        cursor: pointer;
+      }
+      .filter-select:focus { border-color: rgba(26,170,144,0.4); }
+      .search-input {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        color: var(--text);
+        padding: 9px 14px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        border-radius: 4px;
+        outline: none;
+        transition: border-color 0.2s;
+        width: 220px;
+      }
+      .search-input:focus { border-color: rgba(26,170,144,0.4); }
+      .search-input::placeholder { color: var(--muted); }
+
+      .btn-export {
+        background: transparent;
+        border: 1px solid var(--card-border);
+        color: var(--muted);
+        padding: 9px 18px;
+        font-family: "Syne", sans-serif;
+        font-weight: 600; font-size: 11px;
+        letter-spacing: 1px; text-transform: uppercase;
+        cursor: pointer; border-radius: 4px;
+        transition: border-color 0.2s, color 0.2s;
+      }
+      .btn-export:hover { border-color: rgba(200,230,225,0.3); color: var(--text); }
+
+      /* ─── STATS ROW ─── */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: var(--card); border: 1px solid var(--card-border);
+        border-radius: 8px; padding: 20px;
+        position: relative; overflow: hidden;
+      }
+      .stat-card::after {
+        content: ""; position: absolute;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--cyan), transparent);
+      }
+      .stat-card.gold::after { background: linear-gradient(90deg, var(--gold), transparent); }
+      .stat-card.purple::after { background: linear-gradient(90deg, #b06aff, transparent); }
+      .stat-num { font-family: "Syne", sans-serif; font-size: 28px; font-weight: 800; color: var(--heading); line-height: 1; margin-bottom: 4px; }
+      .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+      /* ─── TABLE ─── */
+      .table-wrap { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; overflow: hidden; }
+      table { width: 100%; border-collapse: collapse; }
+      thead { background: rgba(26,170,144,0.05); border-bottom: 1px solid var(--card-border); }
+      th { font-family: "Syne", sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent-teal); padding: 12px 16px; text-align: left; }
+      td { font-size: 13px; color: var(--body-text); padding: 12px 16px; border-bottom: 1px solid rgba(26,144,128,0.06); vertical-align: middle; }
+      tr:last-child td { border-bottom: none; }
+      tr:hover td { background: rgba(26,170,144,0.03); }
+
+      .badge { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; border: 1px solid; }
+      .badge.upcoming { color: var(--accent-teal); border-color: rgba(45,224,188,0.25); background: rgba(45,224,188,0.07); }
+      .badge.past { color: var(--muted); border-color: rgba(200,230,225,0.12); }
+
+      .act-btn { background: transparent; border: 1px solid var(--card-border); color: var(--muted); font-size: 11px; padding: 4px 10px; border-radius: 3px; cursor: pointer; font-family: "DM Sans", sans-serif; transition: all 0.2s; }
+      .act-btn.danger:hover { border-color: rgba(255,95,109,0.4); color: #ff8f9a; }
+
+      .empty-row td { text-align: center; color: var(--muted); padding: 40px; font-size: 14px; }
+
+      /* ─── CONFIRM MODAL ─── */
+      .modal-overlay { position: fixed; inset: 0; background: rgba(5,17,26,0.88); backdrop-filter: blur(8px); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+      .modal-overlay.visible { opacity: 1; pointer-events: all; }
+      .confirm-modal { background: #0c1824; border: 1px solid rgba(255,95,109,0.2); border-radius: 12px; padding: 32px; width: 100%; max-width: 380px; text-align: center; transform: translateY(20px); transition: transform 0.3s; }
+      .modal-overlay.visible .confirm-modal { transform: translateY(0); }
+      .confirm-modal h3 { font-family: "Syne", sans-serif; font-size: 18px; font-weight: 800; color: var(--heading); margin-bottom: 10px; }
+      .confirm-modal p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+      .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+      .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--card-border); padding: 10px 24px; font-family: "Syne", sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: border-color 0.2s, color 0.2s; }
+      .btn-outline:hover { border-color: rgba(200,230,225,0.3); color: var(--text); }
+      .btn-danger { background: #ff5f6d; color: white; padding: 10px 24px; border: none; font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: opacity 0.2s; }
+      .btn-danger:hover { opacity: 0.88; }
+    </style>
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a href="../index.html" class="sidebar-logo">
+        <div class="sidebar-logo-mark">
+          <img src="../images/lo.jpg" alt="KCC Logo" />
+        </div>
+        <div class="sidebar-logo-text">KCC Admin <span>Registrations</span></div>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="events.html"><span class="nav-icon">🗓</span> Events</a>
+        <a href="registrations.html" class="active"><span class="nav-icon">📋</span> Registrations</a>
+        <a href="contacts.html"><span class="nav-icon">✉️</span> Contact Forms</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <h1>Registrations</h1>
+        <div class="topbar-right">
+          <span>Welcome, Admin</span>
+          <span class="admin-badge">Admin</span>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- STATS -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-num" id="total-count">0</div>
+            <div class="stat-label">Total Registrations</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-num" id="upcoming-count">0</div>
+            <div class="stat-label">Upcoming Events</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-num" id="event-count">0</div>
+            <div class="stat-label">Events with Registrations</div>
+          </div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filters">
+          <div class="filters-left">
+            <select class="filter-select" id="filter-event" onchange="applyFilters()">
+              <option value="">All Events</option>
+            </select>
+            <input class="search-input" id="search-input" placeholder="Search by name or ID..." oninput="applyFilters()" />
+          </div>
+          <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Full Name</th>
+                <th>Student ID</th>
+                <th>Department</th>
+                <th>Year</th>
+                <th>Email</th>
+                <th>Event</th>
+                <th>Registered</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="reg-table"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DELETE CONFIRM -->
+    <div class="modal-overlay" id="delete-modal">
+      <div class="confirm-modal">
+        <h3>Delete Registration?</h3>
+        <p>This will permanently remove this registration record.</p>
+        <div class="confirm-btns">
+          <button class="btn-outline" onclick="closeModal()">Cancel</button>
+          <button class="btn-danger" onclick="confirmDelete()">Yes, Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      if (!sessionStorage.getItem("kcc_admin")) window.location.href = "login.html";
+      function logout() { sessionStorage.removeItem("kcc_admin"); window.location.href = "login.html"; }
+
+      // ─── SAMPLE DATA (replace with DB later) ───
+      let registrations = [
+        { id: 1, name: "Rafiul Islam", studentId: "2103001", dept: "CSE", year: "3rd Year", email: "rafiul@kuet.ac.bd", event: "BizBattle 6.0", eventType: "upcoming", date: "2026-05-22" },
+        { id: 2, name: "Nusrat Jahan", studentId: "2003045", dept: "EEE", year: "4th Year", email: "nusrat@kuet.ac.bd", event: "Study in Germany", eventType: "upcoming", date: "2026-05-21" },
+        { id: 3, name: "Tanvir Ahmed", studentId: "2203012", dept: "ME", year: "2nd Year", email: "tanvir@kuet.ac.bd", event: "BizBattle 6.0", eventType: "upcoming", date: "2026-05-20" },
+        { id: 4, name: "Sadia Akter", studentId: "2103055", dept: "CE", year: "3rd Year", email: "sadia@kuet.ac.bd", event: "Study in Germany", eventType: "upcoming", date: "2026-05-19" },
+        { id: 5, name: "Mehedi Hasan", studentId: "1903022", dept: "IPE", year: "4th Year", email: "mehedi@kuet.ac.bd", event: "BizBattle 5.0", eventType: "past", date: "2026-03-10" },
+        { id: 6, name: "Farhan Kabir", studentId: "2203088", dept: "CSE", year: "2nd Year", email: "farhan@kuet.ac.bd", event: "BizBattle 6.0", eventType: "upcoming", date: "2026-05-18" },
+        { id: 7, name: "Ritu Das", studentId: "2103071", dept: "URP", year: "3rd Year", email: "ritu@kuet.ac.bd", event: "Green Entrepreneurship", eventType: "past", date: "2024-11-13" },
+      ];
+
+      let deletingId = null;
+      let filtered = [...registrations];
+
+      function populateEventFilter() {
+        const events = [...new Set(registrations.map(r => r.event))];
+        const sel = document.getElementById("filter-event");
+        events.forEach(ev => {
+          const opt = document.createElement("option");
+          opt.value = ev; opt.textContent = ev;
+          sel.appendChild(opt);
+        });
+      }
+
+      function updateStats() {
+        document.getElementById("total-count").textContent = registrations.length;
+        const upcomingEvents = new Set(registrations.filter(r => r.eventType === "upcoming").map(r => r.event));
+        document.getElementById("upcoming-count").textContent = upcomingEvents.size;
+        document.getElementById("event-count").textContent = new Set(registrations.map(r => r.event)).size;
+      }
+
+      function applyFilters() {
+        const eventFilter = document.getElementById("filter-event").value;
+        const search = document.getElementById("search-input").value.toLowerCase();
+        filtered = registrations.filter(r => {
+          const matchEvent = !eventFilter || r.event === eventFilter;
+          const matchSearch = !search || r.name.toLowerCase().includes(search) || r.studentId.includes(search);
+          return matchEvent && matchSearch;
+        });
+        renderTable();
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById("reg-table");
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr class="empty-row"><td colspan="9">No registrations found.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = filtered.map((r, i) => `
+          <tr>
+            <td style="color:var(--dim)">${i + 1}</td>
+            <td><strong style="color:var(--heading)">${r.name}</strong></td>
+            <td>${r.studentId}</td>
+            <td>${r.dept}</td>
+            <td>${r.year}</td>
+            <td>${r.email}</td>
+            <td>
+              <span class="badge ${r.eventType}">${r.event}</span>
+            </td>
+            <td style="color:var(--dim)">${formatDate(r.date)}</td>
+            <td>
+              <button class="act-btn danger" onclick="openDelete(${r.id})">Delete</button>
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      function formatDate(d) {
+        if (!d) return "—";
+        return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+      }
+
+      function openDelete(id) {
+        deletingId = id;
+        document.getElementById("delete-modal").classList.add("visible");
+        document.body.style.overflow = "hidden";
+      }
+      function closeModal() {
+        document.getElementById("delete-modal").classList.remove("visible");
+        document.body.style.overflow = "";
+      }
+      function confirmDelete() {
+        registrations = registrations.filter(r => r.id !== deletingId);
+        filtered = filtered.filter(r => r.id !== deletingId);
+        updateStats();
+        renderTable();
+        closeModal();
+      }
+
+      // ─── EXPORT CSV ───
+      function exportCSV() {
+        const headers = ["#", "Name", "Student ID", "Dept", "Year", "Email", "Event", "Date"];
+        const rows = filtered.map((r, i) => [i+1, r.name, r.studentId, r.dept, r.year, r.email, r.event, r.date]);
+        const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "kcc_registrations.csv";
+        a.click(); URL.revokeObjectURL(url);
+      }
+
+      document.getElementById("delete-modal").addEventListener("click", function(e) {
+        if (e.target === this) closeModal();
+      });
+
+      populateEventFilter();
+      updateStats();
+      renderTable();
+    </script>
+  </body>
+</html>
