@@ -1565,9 +1565,7 @@ h4 {
 /* ─── CANVAS NODE COLOR FIX ─── */
 /* nodes will use teal color via JS */
 
-/* ════════════════════════════════════
-   LEFT-TO-RIGHT TEXT REVEAL + COLORS
-════════════════════════════════════ */
+/*  LEFT-TO-RIGHT TEXT REVEAL + COLORS */
 
 /* ── FONT COLOR SYSTEM ── */
 :root {
@@ -1704,9 +1702,7 @@ footer p {
   color: var(--heading);
 }
 
-/* ════════════════════════════════
-   L→R REVEAL ANIMATION ENGINE
-════════════════════════════════ */
+/* L→R REVEAL ANIMATION ENGINE  */
 
 /* Wrapper for any element you want revealed */
 .ltr-reveal {
@@ -1974,7 +1970,7 @@ footer p {
   transform: scaleX(1);
 }
 
-/* ════ STABILITY FIXES — NO MORE JUMPING ════ */
+/* STABILITY FIXES — NO MORE JUMPING */
 
 /* Kill hero line wipe (causes jump on load) */
 .hero-title .line::after {

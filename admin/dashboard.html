@@ -623,6 +623,38 @@
     </div>
 
     <script>
+
+        // ─── LOAD DASHBOARD STATS ───
+        function loadStats() {
+            // Total Events
+            fetch("/api/GetEvents.ashx?type=admin")
+                .then(res => res.json())
+                .then(data => {
+                    document.querySelector(".stats-row .stat-card:nth-child(1) .stat-num").textContent = data.length;
+                    const upcoming = data.filter(e => e.Status && e.Status.toLowerCase() === "upcoming").length;
+                    document.querySelector(".stats-row .stat-card:nth-child(4) .stat-num").textContent = upcoming;
+                })
+                .catch(() => { });
+
+            // Total Registrations
+            fetch("/api/GetRegistrations.ashx")
+                .then(res => res.json())
+                .then(data => {
+                    document.querySelector(".stats-row .stat-card:nth-child(2) .stat-num").textContent = data.length;
+                })
+                .catch(() => { });
+
+            // Total Contact Forms
+            fetch("/api/GetContacts.ashx")
+                .then(res => res.json())
+                .then(data => {
+                    document.querySelector(".stats-row .stat-card:nth-child(3) .stat-num").textContent = data.length;
+                })
+                .catch(() => { });
+        }
+
+        loadStats();
+
       // Auth check
       if (!sessionStorage.getItem("kcc_admin")) {
         window.location.href = "login.html";

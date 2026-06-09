@@ -13,21 +13,70 @@ public class GetEvents : IHttpHandler
 
         try
         {
-            string type = (context.Request.QueryString["type"] ?? "all").ToLower().Trim();
             var db = new KCCDbContext();
-            var query = db.Events.AsQueryable();
+            string type = (context.Request.QueryString["type"] ?? "all").ToLower().Trim();
+            string idStr = context.Request.QueryString["id"];
+            var serializer = new JavaScriptSerializer();
+            serializer.MaxJsonLength = int.MaxValue;
+
+            // Single event by ID
+            if (!string.IsNullOrEmpty(idStr))
+            {
+                int id = int.Parse(idStr);
+                var ev = db.Events.Find(id);
+                if (ev == null)
+                {
+                    context.Response.Write("{\"error\":\"Not found\"}");
+                    return;
+                }
+                context.Response.Write(serializer.Serialize(ev));
+                return;
+            }
+
+            object events;
 
             if (type == "upcoming")
-                query = query.Where(e => e.Status.ToLower() == "upcoming" && e.Visibility.ToLower() == "visible");
+            {
+                events = db.Events
+                    .Where(e => e.Status.ToLower() == "upcoming" && e.Visibility.ToLower() == "visible")
+                    .OrderBy(e => e.EventDate).ToList();
+            }
             else if (type == "past")
-                query = query.Where(e => e.Status.ToLower() == "past" && e.Visibility.ToLower() == "visible");
+            {
+                events = db.Events
+                    .Where(e => e.Status.ToLower() == "past" && e.Visibility.ToLower() == "visible")
+                    .OrderByDescending(e => e.EventDate).ToList();
+            }
             else if (type == "admin")
-                query = query.OrderByDescending(e => e.CreatedAt);
+            {
+                events = db.Events
+                    .OrderByDescending(e => e.CreatedAt).ToList();
+            }
+            else if (type == "home")
+            {
+                // Homepage: max 4, upcoming first then past
+                var upcoming = db.Events
+                    .Where(e => e.Status.ToLower() == "upcoming" && e.Visibility.ToLower() == "visible")
+                    .OrderBy(e => e.EventDate).ToList();
+                var past = db.Events
+                    .Where(e => e.Status.ToLower() == "past" && e.Visibility.ToLower() == "visible")
+                    .OrderByDescending(e => e.EventDate).ToList();
+                upcoming.AddRange(past);
+                events = upcoming.Take(4).ToList();
+            }
             else
-                query = query.Where(e => e.Visibility.ToLower() == "visible");
+            {
+                // all visible
+                var upcoming = db.Events
+                    .Where(e => e.Status.ToLower() == "upcoming" && e.Visibility.ToLower() == "visible")
+                    .OrderBy(e => e.EventDate).ToList();
+                var past = db.Events
+                    .Where(e => e.Status.ToLower() == "past" && e.Visibility.ToLower() == "visible")
+                    .OrderByDescending(e => e.EventDate).ToList();
+                upcoming.AddRange(past);
+                events = upcoming;
+            }
 
-            var events = query.OrderByDescending(e => e.CreatedAt).ToList();
-            var serializer = new JavaScriptSerializer();
             context.Response.Write(serializer.Serialize(events));
         }
         catch (Exception ex)

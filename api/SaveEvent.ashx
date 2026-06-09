@@ -1,5 +1,7 @@
 ﻿<%@ WebHandler Language="C#" Class="SaveEvent" %>
+
 using System;
+using System.IO;
 using System.Web;
 
 public class SaveEvent : IHttpHandler
@@ -7,56 +9,93 @@ public class SaveEvent : IHttpHandler
     public void ProcessRequest(HttpContext context)
     {
         context.Response.ContentType = "application/json";
-        context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 
         try
         {
-            string idStr = context.Request.Form["id"];
-            string title = context.Request.Form["title"];
-            string description = context.Request.Form["description"];
-            string location = context.Request.Form["location"];
-            string dateStr = context.Request.Form["date"];
-            string status = context.Request.Form["status"];
-            string visibility = context.Request.Form["visibility"];
+            var db = new KCCDbContext();
 
-            if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(dateStr))
+            int id = Convert.ToInt32(
+                context.Request.Form["id"] ?? "0"
+            );
+
+            Event ev;
+
+            if (id > 0)
             {
-                context.Response.Write("{\"success\":false,\"message\":\"Missing required fields\"}");
-                return;
-            }
+                ev = db.Events.Find(id);
 
-            var ev = new Event
-            {
-                Title = title,
-                Description = description,
-                Location = location,
-               EventDate = string.IsNullOrEmpty(dateStr) ? DateTime.Now : DateTime.Parse(dateStr),
-                Status = status,
-                Visibility = visibility
-            };
-
-            var controller = new EventController();
-
-            if (!string.IsNullOrEmpty(idStr) && idStr != "0")
-            {
-                ev.Id = int.Parse(idStr);
-                controller.UpdateEvent(ev);
+                if (ev == null)
+                {
+                    context.Response.Write(
+                        "{\"success\":false,\"message\":\"Event not found\"}"
+                    );
+                    return;
+                }
             }
             else
             {
-                controller.AddEvent(ev);
+                ev = new Event();
+                ev.CreatedAt = DateTime.Now;
+
+                db.Events.Add(ev);
             }
+
+            ev.Title = context.Request.Form["title"];
+            ev.Description = context.Request.Form["description"];
+            ev.Location = context.Request.Form["location"];
+            ev.Status = context.Request.Form["status"];
+            ev.Visibility = context.Request.Form["visibility"];
+
+            DateTime eventDate;
+
+            if (DateTime.TryParse(
+                context.Request.Form["date"],
+                out eventDate))
+            {
+                ev.EventDate = eventDate;
+            }
+
+            HttpPostedFile image =
+                context.Request.Files["image"];
+
+            if (image != null && image.ContentLength > 0)
+            {
+                string uploadsFolder =
+                    context.Server.MapPath("~/uploads/");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                string fileName =
+                    Guid.NewGuid().ToString()
+                    + Path.GetExtension(image.FileName);
+
+                string fullPath =
+                    Path.Combine(uploadsFolder, fileName);
+
+                image.SaveAs(fullPath);
+
+                ev.ImageUrl = "/uploads/" + fileName;
+            }
+
+            db.SaveChanges();
 
             context.Response.Write("{\"success\":true}");
         }
         catch (Exception ex)
         {
-            context.Response.Write("{\"success\":false,\"message\":\"" + ex.Message + "\"}");
+            context.Response.Write(
+                "{\"success\":false,\"message\":\""
+                + ex.Message.Replace("\"", "")
+                + "\"}"
+            );
         }
     }
 
-       public bool IsReusable
-{
-    get { return false; }
-}
+    public bool IsReusable
+    {
+        get { return false; }
+    }
 }

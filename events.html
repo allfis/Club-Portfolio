@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Events — KUET Career Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        /* ─── HERO ─── */
+        .events-hero {
+            position: relative;
+            padding: 160px 5% 80px;
+            background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(13,90,79,0.15) 0%, transparent 65%), var(--bg);
+            overflow: hidden;
+        }
+
+            .events-hero::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background-image: linear-gradient(rgba(26,170,144,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(26,170,144,0.03) 1px, transparent 1px);
+                background-size: 60px 60px;
+                pointer-events: none;
+            }
+
+        .events-hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+        }
+
+        .events-hero h1 {
+            font-size: clamp(36px, 5vw, 64px);
+            font-weight: 800;
+            line-height: 1.05;
+            margin-bottom: 16px;
+            color: var(--heading, #e8f5f2);
+        }
+
+        .events-hero p {
+            font-size: 17px;
+            color: var(--body-text, #a8cec8);
+            line-height: 1.7;
+        }
+
+        /* ─── FILTER TABS ─── */
+        .filter-bar {
+            padding: 0 5%;
+            margin-top: 48px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 0;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-family: "Syne", sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 14px 20px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+            .filter-btn::after {
+                content: "";
+                position: absolute;
+                bottom: -1px;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: var(--cyan);
+                transform: scaleX(0);
+                transition: transform 0.25s;
+            }
+
+            .filter-btn.active {
+                color: var(--cyan);
+            }
+
+                .filter-btn.active::after {
+                    transform: scaleX(1);
+                }
+
+            .filter-btn:hover {
+                color: var(--text);
+            }
+
+        /* ─── EVENTS SECTION ─── */
+        .events-section {
+            padding: 48px 5% 100px;
+        }
+
+        /* ─── SECTION DIVIDER ─── */
+        .events-group-label {
+            font-family: "Syne", sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent-teal, #2de0bc);
+            margin-bottom: 20px;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+            .events-group-label:first-child {
+                margin-top: 0;
+            }
+
+            .events-group-label::before {
+                content: "";
+                width: 24px;
+                height: 1px;
+                background: var(--accent-teal, #2de0bc);
+            }
+
+        /* ─── GRID ─── */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        /* ─── CARD ─── */
+        .event-card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+        }
+
+            .event-card:hover {
+                transform: translateY(-6px);
+                border-color: rgba(26,170,144,0.3);
+                box-shadow: 0 20px 50px rgba(13,90,79,0.25);
+            }
+
+            .event-card.upcoming-card {
+                border-top: 2px solid var(--cyan);
+            }
+
+            .event-card.past-card {
+                border-top: 2px solid rgba(200,230,225,0.2);
+            }
+
+        /* ─── CARD IMAGE ─── */
+        .card-img {
+            position: relative;
+            height: 190px;
+            overflow: hidden;
+            background: rgba(26,144,128,0.05);
+            flex-shrink: 0;
+        }
+
+            .card-img img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+                display: block;
+            }
+
+        .event-card:hover .card-img img {
+            transform: scale(1.06);
+        }
+
+        .card-img-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            background: linear-gradient(135deg, rgba(26,144,128,0.1), rgba(26,144,128,0.02));
+        }
+
+        .card-img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(6,8,15,0.75) 0%, transparent 55%);
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 12px;
+        }
+
+        .card-status-badge {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 2px;
+            border: 1px solid;
+        }
+
+            .card-status-badge.upcoming {
+                color: var(--cyan);
+                border-color: rgba(26,170,144,0.4);
+                background: rgba(26,170,144,0.12);
+            }
+
+            .card-status-badge.past {
+                color: var(--muted);
+                border-color: rgba(200,230,225,0.15);
+                background: rgba(200,230,225,0.05);
+            }
+
+        .card-date-badge {
+            font-size: 10px;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 0.5px;
+        }
+
+        /* ─── CARD BODY ─── */
+        .card-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-title {
+            font-family: "Syne", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--heading, #e8f5f2);
+            line-height: 1.3;
+            margin: 0;
+        }
+
+        .card-location {
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid rgba(26,144,128,0.08);
+        }
+
+        .card-btn {
+            flex: 1;
+            padding: 9px 14px;
+            border-radius: 4px;
+            font-family: "Syne", sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+            transition: opacity 0.2s, transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+            .card-btn:hover {
+                opacity: 0.88;
+                transform: translateY(-1px);
+            }
+
+            .card-btn.primary {
+                background: var(--cyan);
+                color: #06080f;
+            }
+
+            .card-btn.outline {
+                background: transparent;
+                color: var(--muted);
+                border: 1px solid var(--card-border);
+            }
+
+                .card-btn.outline:hover {
+                    border-color: rgba(200,230,225,0.3);
+                    color: var(--text);
+                }
+
+        /* ─── LOADING / EMPTY ─── */
+        .loading-wrap {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted);
+        }
+
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--card-border);
+            border-top-color: var(--cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        /* ─── REGISTER MODAL ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5,17,26,0.88);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+            .modal-overlay.visible {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+        .modal {
+            background: #0c1824;
+            border: 1px solid rgba(26,170,144,0.15);
+            border-radius: 12px;
+            padding: 36px;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.visible .modal {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 20px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s, color 0.2s;
+        }
+
+            .modal-close:hover {
+                background: rgba(255,255,255,0.06);
+                color: var(--text);
+            }
+
+        .modal h3 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--heading, #e8f5f2);
+            margin-bottom: 6px;
+        }
+
+        .modal-event-name {
+            font-size: 12px;
+            color: var(--cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+            .form-group label {
+                font-size: 11px;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: var(--muted);
+            }
+
+            .form-group input, .form-group select {
+                background: rgba(26,144,128,0.04);
+                border: 1px solid var(--card-border);
+                color: var(--text);
+                padding: 11px 14px;
+                font-family: "DM Sans", sans-serif;
+                font-size: 14px;
+                border-radius: 4px;
+                outline: none;
+                transition: border-color 0.2s;
+                width: 100%;
+            }
+
+                .form-group input:focus, .form-group select:focus {
+                    border-color: rgba(26,170,144,0.4);
+                }
+
+                .form-group input::placeholder {
+                    color: var(--muted);
+                }
+
+                .form-group select option {
+                    background: #0c1824;
+                    color: var(--text);
+                }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-submit {
+            width: 100%;
+            background: var(--cyan);
+            color: #06080f;
+            padding: 13px 24px;
+            border: none;
+            font-family: "Syne", sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: opacity 0.2s;
+            margin-top: 8px;
+        }
+
+            .form-submit:hover {
+                opacity: 0.88;
+            }
+
+        @media (max-width: 768px) {
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                gap: 0;
+            }
+
+            .filter-btn {
+                padding: 12px 14px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mouse-canvas"></canvas>
+
+    <!-- NAV -->
+    <nav id="main-nav">
+        <a href="index.html" class="nav-logo">
+            <div class="nav-logo-mark"><img src="images/lo.jpg" alt="KCC Logo" /></div>
+            <div class="nav-logo-text">KUET Career Club <span>Est. KUET · Khulna</span></div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html#about"><span class="link-text">About</span></a></li>
+            <li><a href="events.html" style="color:var(--cyan)"><span class="link-text">Events</span></a></li>
+            <li><a href="index.html#services"><span class="link-text">Services</span></a></li>
+            <li><a href="index.html#journey"><span class="link-text">Journey</span></a></li>
+            <li><a href="index.html#contact"><span class="link-text">Contact</span></a></li>
+            <li><a href="index.html#contact" class="nav-cta">Join KCC</a></li>
+            <li><a href="admin/login.html" class="nav-login">Login</a></li>
+        </ul>
+        <button class="nav-hamburger" id="nav-hamburger" onclick="toggleNav()">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- HERO -->
+    <div class="events-hero">
+        <div class="events-hero-content reveal">
+            <div class="section-label">KCC Events</div>
+            <h1>Programs &amp; Events</h1>
+            <p>Explore all upcoming and past events organized by KUET Career Club.</p>
+        </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterEvents('all', this)">All Events</button>
+        <button class="filter-btn" onclick="filterEvents('upcoming', this)">🗓 Upcoming</button>
+        <button class="filter-btn" onclick="filterEvents('past', this)">📁 Past</button>
+    </div>
+
+    <!-- EVENTS SECTION -->
+    <div class="events-section" id="events-section">
+        <div class="loading-wrap">
+            <div class="loading-spinner"></div>
+            <p>Loading events...</p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 KUET Career Club · Khulna University of Engineering &amp; Technology</p>
+        <div class="footer-links">
+            <a href="index.html#about"><span class="link-text">About</span></a>
+            <a href="events.html"><span class="link-text">Events</span></a>
+            <a href="index.html#contact"><span class="link-text">Contact</span></a>
+            <a href="mailto:kuetcareerclub@gmail.com">Email Us</a>
+        </div>
+    </footer>
+
+    <!-- REGISTER MODAL -->
+    <div class="modal-overlay" id="reg-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeReg()">✕</button>
+            <h3>Event Registration</h3>
+            <p class="modal-event-name" id="reg-event-name"></p>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="reg-name" placeholder="Your full name" />
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input type="text" id="reg-id" placeholder="KUET ID" />
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <select id="reg-year">
+                        <option value="">Select year</option>
+                        <option>1st Year</option>
+                        <option>2nd Year</option>
+                        <option>3rd Year</option>
+                        <option>4th Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="reg-email" placeholder="your@email.com" />
+            </div>
+            <div class="form-group">
+                <label>Department</label>
+                <select id="reg-dept">
+                    <option value="">Select department</option>
+                    <option>CSE</option>
+                    <option>EEE</option>
+                    <option>ECE</option>
+                    <option>ME</option>
+                    <option>CE</option>
+                    <option>IPE</option>
+                    <option>URP</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <button class="form-submit" onclick="submitReg(this)">Confirm Registration →</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // NAV
+        //const nav = document.getElementById("main-nav");
+        //window.addEventListener("scroll", () => nav.classList.toggle("scrolled", window.scrollY > 50));
+
+        // DATE FORMAT
+        function formatDate(d) {
+            if (!d) return "TBA";
+            try {
+                let date;
+                if (typeof d === "string" && d.indexOf("/Date(") !== -1) {
+                    const ms = parseInt(d.replace("/Date(", "").replace(")/", "").split("+")[0]);
+                    date = new Date(ms);
+                } else {
+                    date = new Date(d);
+                }
+                if (isNaN(date.getTime())) return "TBA";
+                return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+            } catch { return "TBA"; }
+        }
+
+        // ALL EVENTS STORE
+        let allEvents = [];
+        let currentFilter = "all";
+
+        // LOAD
+        function loadEvents() {
+            console.log("LOAD EVENTS CALLED");
+
+            document.getElementById("events-section").innerHTML =
+                `<div class="loading-wrap"><div class="loading-spinner"></div><p>Loading events...</p></div>`;
+
+            fetch("/api/GetEvents.ashx?type=all")
+                .then(res => res.json())
+                .then(data => {
+                    console.log("RAW DATA:", data);
+
+                    allEvents = data;
+                    renderEvents(allEvents);
+                })
+                .catch(err => {
+                    console.error("FETCH ERROR:", err);
+
+                    document.getElementById("events-section").innerHTML =
+                        `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Could not load events.</p></div>`;
+                });
+        }
+
+        // FILTER
+        function filterEvents(type, btn) {
+            currentFilter = type;
+            document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            if (type === "all") renderEvents(allEvents);
+            else renderEvents(allEvents.filter(e => e.Status && e.Status.toLowerCase() === type));
+        }
+
+        function safe(val) {
+            return (val || "").toString();
+        }
+
+        // RENDER
+        function renderEvents(events) {
+            const section = document.getElementById("events-section");
+            if (!events || events.length === 0) {
+                section.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>No events found.</p></div>`;
+                return;
+            }
+
+            const upcoming = events.filter(e => (e.Status || "").toLowerCase() === "upcoming");
+            const past = events.filter(e => (e.Status || "").toLowerCase() === "past");
+
+            let html = "";
+
+            if (upcoming.length > 0) {
+                html += `<div class="events-group-label">Upcoming Events</div>`;
+                html += `<div class="events-grid">`;
+                html += upcoming.map(ev => buildCard(ev)).join("");
+                html += `</div>`;
+            }
+
+            if (past.length > 0) {
+                html += `<div class="events-group-label">Past Events</div>`;
+                html += `<div class="events-grid">`;
+                html += past.map(ev => buildCard(ev)).join("");
+                html += `</div>`;
+            }
+
+            section.innerHTML = html;
+            section.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+        }
+
+        // BUILD CARD
+        function buildCard(ev) {
+            const isUpcoming = ev.Status && ev.Status.toLowerCase() === "upcoming";
+            const imgHtml = ev.ImageUrl
+                ? `<img src="${ev.ImageUrl}" alt="${ev.Title}" onerror="this.parentElement.innerHTML='<div class=\\'card-img-placeholder\\'>🎯</div>'" />`
+                : `<div class="card-img-placeholder">🎯</div>`;
+
+            const detailUrl = `event-detail.html?id=${ev.Id}`;
+
+            return `
+                <div class="event-card ${isUpcoming ? 'upcoming-card' : 'past-card'} reveal">
+                  <div class="card-img">
+                    ${imgHtml}
+                    <div class="card-img-overlay">
+                      <span class="card-status-badge ${isUpcoming ? 'upcoming' : 'past'}">${isUpcoming ? 'Upcoming' : 'Past'}</span>
+                      <span class="card-date-badge">${formatDate(ev.EventDate)}</span>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <h3 class="card-title">${ev.Title}</h3>
+                    <div class="card-location">📍 ${ev.Location || 'KUET Campus'}</div>
+                    <div class="card-actions">
+                      <a href="${detailUrl}" class="card-btn outline">View Details</a>
+                      ${isUpcoming ? `<button class="card-btn primary" onclick="openReg('${ev.Title.replace(/'/g, "\\'")}')">Register Now</button>` : ""}
+                    </div>
+                  </div>
+                </div>
+              `;
+        }
+
+        // REGISTER
+        function openReg(eventName) {
+            document.getElementById("reg-event-name").textContent = eventName;
+            document.getElementById("reg-modal").classList.add("visible");
+            document.body.style.overflow = "hidden";
+        }
+        function closeReg() {
+            document.getElementById("reg-modal").classList.remove("visible");
+            document.body.style.overflow = "";
+        }
+        document.getElementById("reg-modal").addEventListener("click", function (e) {
+            if (e.target === this) closeReg();
+        });
+
+        function submitReg(btn) {
+            const name = document.getElementById("reg-name").value.trim();
+            const email = document.getElementById("reg-email").value.trim();
+            const dept = document.getElementById("reg-dept").value;
+            const eventName = document.getElementById("reg-event-name").textContent;
+
+            if (!name || !email || !dept) {
+                alert("Please fill in Name, Email and Department.");
+                return;
+            }
+
+            btn.textContent = "Submitting...";
+            btn.disabled = true;
+
+            const fd = new FormData();
+            fd.append("fullName", name);
+            fd.append("studentId", document.getElementById("reg-id").value.trim());
+            fd.append("year", document.getElementById("reg-year").value);
+            fd.append("email", email);
+            fd.append("department", dept);
+            fd.append("eventName", eventName);
+           
+
+            fetch("/api/RegisterEvent.ashx", { method: "POST", body: fd })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        btn.textContent = "✓ Registered!";
+                        btn.style.background = "#00e676";
+                        setTimeout(() => {
+                            closeReg();
+                            btn.textContent = "Confirm Registration →";
+                            btn.disabled = false;
+                            btn.style.background = "";
+                        }, 2000);
+                    } else {
+                        alert("Error: " + data.message);
+                        btn.textContent = "Confirm Registration →";
+                        btn.disabled = false;
+                    }
+                })
+                .catch(() => {
+                    alert("Something went wrong.");
+                    btn.textContent = "Confirm Registration →";
+                    btn.disabled = false;
+                });
+        }
+
+        loadEvents();
+    </script>
+</body>
+</html>

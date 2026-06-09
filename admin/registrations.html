@@ -212,7 +212,6 @@
             </select>
             <input class="search-input" id="search-input" placeholder="Search by name or ID..." oninput="applyFilters()" />
           </div>
-          <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
         </div>
 
         <!-- TABLE -->
@@ -254,19 +253,37 @@
       if (!sessionStorage.getItem("kcc_admin")) window.location.href = "login.html";
       function logout() { sessionStorage.removeItem("kcc_admin"); window.location.href = "login.html"; }
 
-      // ─── SAMPLE DATA (replace with DB later) ───
-      let registrations = [
-        { id: 1, name: "Rafiul Islam", studentId: "2103001", dept: "CSE", year: "3rd Year", email: "rafiul@kuet.ac.bd", event: "BizBattle 6.0", eventType: "upcoming", date: "2026-05-22" },
-        { id: 2, name: "Nusrat Jahan", studentId: "2003045", dept: "EEE", year: "4th Year", email: "nusrat@kuet.ac.bd", event: "Study in Germany", eventType: "upcoming", date: "2026-05-21" },
-        { id: 3, name: "Tanvir Ahmed", studentId: "2203012", dept: "ME", year: "2nd Year", email: "tanvir@kuet.ac.bd", event: "BizBattle 6.0", eventType: "upcoming", date: "2026-05-20" },
-        { id: 4, name: "Sadia Akter", studentId: "2103055", dept: "CE", year: "3rd Year", email: "sadia@kuet.ac.bd", event: "Study in Germany", eventType: "upcoming", date: "2026-05-19" },
-        { id: 5, name: "Mehedi Hasan", studentId: "1903022", dept: "IPE", year: "4th Year", email: "mehedi@kuet.ac.bd", event: "BizBattle 5.0", eventType: "past", date: "2026-03-10" },
-        { id: 6, name: "Farhan Kabir", studentId: "2203088", dept: "CSE", year: "2nd Year", email: "farhan@kuet.ac.bd", event: "BizBattle 6.0", eventType: "upcoming", date: "2026-05-18" },
-        { id: 7, name: "Ritu Das", studentId: "2103071", dept: "URP", year: "3rd Year", email: "ritu@kuet.ac.bd", event: "Green Entrepreneurship", eventType: "past", date: "2024-11-13" },
-      ];
+        // SAMPLE DATA from DB
 
-      let deletingId = null;
-      let filtered = [...registrations];
+        let registrations = [];
+        let filtered = [];
+        let deletingId = null;
+
+        function loadRegistrations() {
+            fetch("/api/GetRegistrations.ashx")
+                .then(res => res.json())
+                .then(data => {
+                    registrations = data.map(r => ({
+                        id: r.Id,
+                        name: r.FullName,
+                        studentId: r.StudentId,
+                        dept: r.Department,
+                        year: r.Year,
+                        email: r.Email,
+                        event: r.EventName,
+                        date: r.RegisteredAt
+                    }));
+                    filtered = [...registrations];
+                    populateEventFilter();
+                    updateStats();
+                    renderTable();
+                })
+                .catch(() => {
+                    document.getElementById("reg-table").innerHTML =
+                        `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">Could not load registrations.</td></tr>`;
+                });
+        }
+
 
       function populateEventFilter() {
         const events = [...new Set(registrations.map(r => r.event))];
@@ -321,10 +338,20 @@
         `).join("");
       }
 
-      function formatDate(d) {
-        if (!d) return "—";
-        return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-      }
+        function formatDate(d) {
+            if (!d) return "—";
+            try {
+                if (typeof d === "string" && d.indexOf("/Date(") !== -1) {
+                    const ms = parseInt(d.replace("/Date(", "").replace(")/", "").split("+")[0]);
+                    return new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+                }
+                const date = new Date(d);
+                if (isNaN(date.getTime())) return "—";
+                return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+            } catch (e) {
+                return "—";
+            }
+        }
 
       function openDelete(id) {
         deletingId = id;
@@ -335,33 +362,24 @@
         document.getElementById("delete-modal").classList.remove("visible");
         document.body.style.overflow = "";
       }
-      function confirmDelete() {
-        registrations = registrations.filter(r => r.id !== deletingId);
-        filtered = filtered.filter(r => r.id !== deletingId);
-        updateStats();
-        renderTable();
-        closeModal();
-      }
+        function confirmDelete() {
+            const formData = new FormData();
+            formData.append("type", "registration");
+            formData.append("id", deletingId);
+            fetch("/api/DeleteItem.ashx", { method: "POST", body: formData })
+                .then(() => {
+                    loadRegistrations();
+                    closeModal();
+                })
+                .catch(() => alert("Something went wrong."));
+        }
 
-      // ─── EXPORT CSV ───
-      function exportCSV() {
-        const headers = ["#", "Name", "Student ID", "Dept", "Year", "Email", "Event", "Date"];
-        const rows = filtered.map((r, i) => [i+1, r.name, r.studentId, r.dept, r.year, r.email, r.event, r.date]);
-        const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
-        const blob = new Blob([csv], { type: "text/csv" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url; a.download = "kcc_registrations.csv";
-        a.click(); URL.revokeObjectURL(url);
-      }
 
       document.getElementById("delete-modal").addEventListener("click", function(e) {
         if (e.target === this) closeModal();
       });
 
-      populateEventFilter();
-      updateStats();
-      renderTable();
+        loadRegistrations();
     </script>
   </body>
 </html>

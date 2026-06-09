@@ -169,7 +169,6 @@
             </select>
             <input class="search-input" id="search-input" placeholder="Search by name or email..." oninput="applyFilters()" />
           </div>
-          <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
         </div>
 
         <!-- TABLE -->
@@ -241,18 +240,33 @@
       if (!sessionStorage.getItem("kcc_admin")) window.location.href = "login.html";
       function logout() { sessionStorage.removeItem("kcc_admin"); window.location.href = "login.html"; }
 
-      // ─── SAMPLE DATA (replace with DB later) ───
-      let contacts = [
-        { id: 1, name: "Sakib Hossain", studentId: "2203011", dept: "CSE", email: "sakib@kuet.ac.bd", message: "I want to join KCC and contribute to organizing career events for juniors.", date: "2026-05-22" },
-        { id: 2, name: "Lamia Sultana", studentId: "2103044", dept: "EEE", email: "lamia@kuet.ac.bd", message: "I am interested in the BCS preparation wing of KCC. Please let me know how to join.", date: "2026-05-21" },
-        { id: 3, name: "Arif Rahman", studentId: "2003030", dept: "ME", email: "arif@kuet.ac.bd", message: "Looking forward to joining KCC for the higher study guidance program.", date: "2026-05-20" },
-        { id: 4, name: "Tasnim Akter", studentId: "2203078", dept: "CE", email: "tasnim@kuet.ac.bd", message: "I heard about KCC from my senior. Would love to be part of the club.", date: "2026-05-19" },
-        { id: 5, name: "Nazmul Haque", studentId: "1903015", dept: "IPE", email: "nazmul@kuet.ac.bd", message: "Any collaboration opportunities between KCC and the entrepreneurship club?", date: "2026-05-15" },
-        { id: 6, name: "Riya Biswas", studentId: "2103062", dept: "URP", email: "riya@kuet.ac.bd", message: "I want to volunteer for the next BizBattle event.", date: "2026-05-10" },
-      ];
+      // SAMPLE DATA DB 
+        let contacts = [];
+        let filtered = [];
+        let deletingId = null;
 
-      let deletingId = null;
-      let filtered = [...contacts];
+        function loadContacts() {
+            fetch("/api/GetContacts.ashx")
+                .then(res => res.json())
+                .then(data => {
+                    contacts = data.map(c => ({
+                        id: c.Id,
+                        name: c.FullName,
+                        studentId: c.StudentId,
+                        dept: c.Department,
+                        email: c.Email,
+                        message: c.Message,
+                        date: c.SubmittedAt
+                    }));
+                    filtered = [...contacts];
+                    updateStats();
+                    renderTable();
+                })
+                .catch(() => {
+                    document.getElementById("contacts-table").innerHTML =
+                        `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Could not load submissions.</td></tr>`;
+                });
+        }
 
       function updateStats() {
         document.getElementById("total-count").textContent = contacts.length;
@@ -295,11 +309,20 @@
           </tr>
         `).join("");
       }
-
-      function formatDate(d) {
-        if (!d) return "—";
-        return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-      }
+        function formatDate(d) {
+            if (!d) return "—";
+            try {
+                if (typeof d === "string" && d.indexOf("/Date(") !== -1) {
+                    const ms = parseInt(d.replace("/Date(", "").replace(")/", "").split("+")[0]);
+                    return new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+                }
+                const date = new Date(d);
+                if (isNaN(date.getTime())) return "—";
+                return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+            } catch (e) {
+                return "—";
+            }
+        }
 
       function viewDetail(id) {
         const c = contacts.find(x => x.id === id);
@@ -320,13 +343,17 @@
         document.body.style.overflow = "hidden";
       }
 
-      function confirmDelete() {
-        contacts = contacts.filter(c => c.id !== deletingId);
-        filtered = filtered.filter(c => c.id !== deletingId);
-        updateStats();
-        renderTable();
-        closeModal("delete-modal");
-      }
+        function confirmDelete() {
+            const formData = new FormData();
+            formData.append("type", "contact");
+            formData.append("id", deletingId);
+            fetch("/api/DeleteItem.ashx", { method: "POST", body: formData })
+                .then(() => {
+                    loadContacts();
+                    closeModal("delete-modal");
+                })
+                .catch(() => alert("Something went wrong."));
+        }
 
       function closeModal(id) {
         document.getElementById(id).classList.remove("visible");
@@ -339,19 +366,7 @@
         });
       });
 
-      function exportCSV() {
-        const headers = ["#", "Name", "Student ID", "Dept", "Email", "Message", "Date"];
-        const rows = filtered.map((c, i) => [i+1, c.name, c.studentId, c.dept, c.email, `"${c.message}"`, c.date]);
-        const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
-        const blob = new Blob([csv], { type: "text/csv" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url; a.download = "kcc_contacts.csv";
-        a.click(); URL.revokeObjectURL(url);
-      }
-
-      updateStats();
-      renderTable();
+        loadContacts();
     </script>
   </body>
 </html>

@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - KUET Career Club</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .detail-wrap {
+            max-width: 1100px;
+            margin: 140px auto 80px;
+            padding: 0 5%;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--cyan);
+            margin-bottom: 24px;
+        }
+
+        .detail-card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .detail-banner {
+            height: 420px;
+            overflow: hidden;
+            background: rgba(26,144,128,.08);
+        }
+
+            .detail-banner img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .detail-content {
+            padding: 40px;
+        }
+
+        .detail-title {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .detail-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-bottom: 28px;
+            color: var(--muted);
+        }
+
+        .detail-description {
+            line-height: 1.8;
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        .register-btn {
+            margin-top: 30px;
+            display: inline-block;
+            background: var(--cyan);
+            color: #000;
+            text-decoration: none;
+            padding: 14px 24px;
+            font-weight: 700;
+            border-radius: 4px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 120px 20px;
+        }
+
+        @media(max-width:768px) {
+
+            .detail-banner {
+                height: 250px;
+            }
+
+            .detail-title {
+                font-size: 28px;
+            }
+
+            .detail-content {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav id="main-nav">
+        <a href="index.html" class="nav-logo">
+            <div class="nav-logo-mark">
+                <img src="images/lo.jpg" alt="">
+            </div>
+            <div class="nav-logo-text">
+                KUET Career Club
+                <span>Est. KUET · Khulna</span>
+            </div>
+        </a>
+    </nav>
+
+    <div class="detail-wrap">
+
+        <div id="event-detail">
+
+            <div class="loading">
+                Loading event details...
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+    <script>
+
+        function formatDate(d) {
+
+            if (!d) return "TBA";
+
+            try {
+
+                let date;
+
+                if (typeof d === "string" && d.indexOf("/Date(") !== -1) {
+
+                    const ms = parseInt(
+                        d.replace("/Date(", "")
+                            .replace(")/", "")
+                            .split("+")[0]
+                    );
+
+                    date = new Date(ms);
+
+                } else {
+
+                    date = new Date(d);
+
+                }
+
+                return date.toLocaleDateString(
+                    "en-GB",
+                    {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
+                    }
+                );
+
+            } catch {
+
+                return "TBA";
+
+            }
+
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const eventId = params.get("id");
+
+        fetch("/api/GetEvents.ashx?type=all")
+            .then(res => res.json())
+            .then(data => {
+
+                const event = data.find(
+                    e => String(e.Id) === String(eventId)
+                );
+
+                if (!event) {
+
+                    document.getElementById("event-detail").innerHTML =
+                        `
+            <div class="loading">
+                Event not found.
+            </div>
+            `;
+                    return;
+                }
+
+                const imageHtml = event.ImageUrl
+                    ?
+                    `<img src="${event.ImageUrl}" alt="${event.Title}">`
+                    :
+                    `<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:80px;">🎯</div>`;
+
+                const isUpcoming =
+                    event.Status &&
+                    event.Status.toLowerCase() === "upcoming";
+
+                document.getElementById("event-detail").innerHTML =
+                    `
+        <a href="events.html" class="back-btn">
+            ← Back to Events
+        </a>
+
+        <div class="detail-card">
+
+            <div class="detail-banner">
+                ${imageHtml}
+            </div>
+
+            <div class="detail-content">
+
+                <h1 class="detail-title">
+                    ${event.Title}
+                </h1>
+
+                <div class="detail-meta">
+
+                    <span>
+                        📅 ${formatDate(event.EventDate)}
+                    </span>
+
+                    <span>
+                        📍 ${event.Location || "KUET Campus"}
+                    </span>
+
+                    <span>
+                        ${isUpcoming ? "🟢 Upcoming" : "⚪ Past"}
+                    </span>
+
+                </div>
+
+                <div class="detail-description">
+                    ${event.Description || "No description available."}
+                </div>
+
+                ${isUpcoming
+                        ?
+                        `<a href="events.html" class="register-btn">
+                        Register Now
+                    </a>`
+                        :
+                        ""
+                    }
+
+            </div>
+
+        </div>
+        `;
+
+            })
+            .catch(() => {
+
+                document.getElementById("event-detail").innerHTML =
+                    `
+        <div class="loading">
+            Failed to load event.
+        </div>
+        `;
+
+            });
+
+    </script>
+
+</body>
+</html>

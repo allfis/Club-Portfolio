@@ -385,8 +385,8 @@
           </div>
         </div>
         <div class="form-group">
-          <label>Event Image</label>
-          <input type="file" id="ev-image" accept="image/*" style="padding: 8px 14px;" />
+            <label>Event Image</label>
+            <input type="file" id="ev-image" accept=".jpg,.jpeg,.png,.webp" />
         </div>
 
         <button class="form-submit" onclick="saveEvent(this)">Save Event →</button>
@@ -418,12 +418,14 @@
             fetch("/api/GetEvents.ashx?type=admin")
                 .then(res => res.json())
                 .then(data => {
+                    console.log(data);
                     events = data.map(e => ({
                         id: e.Id,
                         title: e.Title,
-                        date: e.EventDate ? e.EventDate.split("T")[0] : "",
+                        date: e.EventDate || "",
                         location: e.Location || "",
                         desc: e.Description || "",
+                        imageUrl: e.ImageUrl || "",
                         status: e.Status,
                         visibility: e.Visibility,
                         regs: 0
@@ -455,11 +457,21 @@
         `).join("");
       }
 
-      function formatDate(d) {
-        if (!d) return "—";
-        const date = new Date(d);
-        return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-      }
+        function formatDate(d) {
+            if (!d) return "—";
+
+            const match = d.match(/\d+/);
+
+            if (!match) return "—";
+
+            const date = new Date(parseInt(match[0]));
+
+            return date.toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
+        }
 
       // ─── ADD MODAL ───
       function openAddModal() {
@@ -483,12 +495,27 @@
         document.getElementById("modal-title").textContent = "Edit Event";
         document.getElementById("ev-title").value = ev.title;
         document.getElementById("ev-desc").value = ev.desc;
-        document.getElementById("ev-date").value = ev.date;
+          if (ev.date && ev.date.startsWith("/Date(")) {
+
+              const timestamp = parseInt(ev.date.match(/\d+/)[0]);
+              const d = new Date(timestamp);
+
+              document.getElementById("ev-date").value =
+                  d.getFullYear() + "-" +
+                  String(d.getMonth() + 1).padStart(2, "0") + "-" +
+                  String(d.getDate()).padStart(2, "0");
+
+          } else {
+
+              document.getElementById("ev-date").value = "";
+
+          }
         document.getElementById("ev-location").value = ev.location;
         document.getElementById("ev-status").value = ev.status;
         document.getElementById("ev-visibility").value = ev.visibility;
         document.getElementById("event-modal").classList.add("visible");
-        document.body.style.overflow = "hidden";
+          document.body.style.overflow = "hidden";
+     
       }
 
       // ─── SAVE ───
@@ -506,6 +533,7 @@
         btn.disabled = true;
 
           const formData = new FormData();
+
           formData.append("id", editingId || "0");
           formData.append("title", title);
           formData.append("description", desc);
@@ -513,6 +541,12 @@
           formData.append("location", location);
           formData.append("status", status);
           formData.append("visibility", visibility);
+
+          const imageFile = document.getElementById("ev-image").files[0];
+
+          if (imageFile) {
+              formData.append("image", imageFile);
+          }
 
           fetch("/api/SaveEvent.ashx", {
               method: "POST",

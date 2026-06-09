@@ -1,6 +1,7 @@
 // ─── CANVAS NETWORK ───
 (function () {
     const canvas = document.getElementById("hero-canvas");
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let W,
         H,
@@ -85,9 +86,11 @@
 
 // ─── NAV SCROLL ───
 const nav = document.getElementById("main-nav");
-window.addEventListener("scroll", () => {
-    nav.classList.toggle("scrolled", window.scrollY > 50);
-});
+if (nav) {
+    window.addEventListener("scroll", () => {
+        nav.classList.toggle("scrolled", window.scrollY > 50);
+    });
+}
 
 // ─── REVEAL ON SCROLL ───
 const reveals = document.querySelectorAll(".reveal");
@@ -117,6 +120,7 @@ reveals.forEach((el) => observer.observe(el));
         "Lead With Purpose",
     ];
     const el = document.getElementById("typewriter-line");
+    if (!el) return;
     let pi = 0,
         ci = 0,
         deleting = false;
@@ -204,20 +208,24 @@ const chatInput = document.getElementById("chat-input");
 const chatSend = document.getElementById("chat-send");
 const chatMsgs = document.getElementById("chat-messages");
 
-chatTrigger.addEventListener("click", () => {
-    chatOpen = !chatOpen;
-    chatWindow.classList.toggle("visible", chatOpen);
-    chatTrigger.classList.toggle("open", chatOpen);
-    chatTrigger.textContent = chatOpen ? "✕" : "💬";
-    if (chatOpen) setTimeout(() => chatInput.focus(), 300);
-});
+if (chatTrigger) {
+    chatTrigger.addEventListener("click", () => {
+        chatOpen = !chatOpen;
+        chatWindow.classList.toggle("visible", chatOpen);
+        chatTrigger.classList.toggle("open", chatOpen);
+        chatTrigger.textContent = chatOpen ? "✕" : "💬";
+        if (chatOpen) setTimeout(() => chatInput.focus(), 300);
+    });
+}
 
-chatInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-    }
-});
+if (chatInput) {
+    chatInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+}
 
 function quickAsk(q) {
     chatInput.value = q;
@@ -288,30 +296,33 @@ Leadership: President is Md. Jubaer Rahman; Vice President is Abdullah al Naeem.
 Always be helpful, warm, and concise. Use emojis occasionally. Keep responses under 120 words unless more detail is clearly needed. If asked something you don't know, suggest contacting KCC directly.`;
 
     try {
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
+        const res = await fetch("/api/chatbot.ashx", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 1000,
-                system: systemPrompt,
-                messages: chatHistory,
-            }),
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: text })
         });
+
         const data = await res.json();
+
         const reply =
-            data.content?.map((b) => b.text || "").join("") ||
+            data.reply ||
             "Sorry, I couldn't get a response. Please try again!";
+
         removeTyping();
         chatHistory.push({ role: "assistant", content: reply });
         appendMsg("bot", reply.replace(/\n/g, "<br>"));
-    } catch {
+
+    } catch (err) {
+        console.error(err);
         removeTyping();
         appendMsg(
             "bot",
-            "Oops! Something went wrong. Please try again or contact us at kuetcareerclub@gmail.com 😊",
+            "Oops! Something went wrong. Please try again or contact us at kuetcareerclub@gmail.com 😊"
         );
     }
+
     isSending = false;
     chatSend.disabled = false;
 }
@@ -323,7 +334,7 @@ Always be helpful, warm, and concise. Use emojis occasionally. Keep responses un
     let W, H;
     const bubbles = [];
     const CAREER_WORDS = [
-        "Career", "KCC", "Skills", "Future", "Passion", "Learn", "Lead",
+        "Career", "KCC", "Skills","BCS" , "Future", "Passion", "Learn", "Lead",
     ];
 
     function resize() {
@@ -407,74 +418,9 @@ function toggleNav() {
     links.classList.toggle("open");
     btn.classList.toggle("open");
 }
-// ─── HAMBURGER MENU ───
-function toggleNav() {
-    const links = document.querySelector(".nav-links");
-    const btn = document.getElementById("nav-hamburger");
-    links.classList.toggle("open");
-    btn.classList.toggle("open");
-}
-// ─── LOAD PROGRAMS FROM DB ───
-(function () {
-    fetch("/api/GetEvents.ashx?type=all")
-        .then(res => res.json())
-        .then(data => {
-            const grid = document.getElementById("programs-grid");
-            if (!grid) return;
 
-            if (!data || data.length === 0) {
-                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">No programs yet.</div>`;
-                return;
-            }
 
-            const colors = [
-                { tag: "var(--cyan)", border: "rgba(26,170,144,0.25)", bg: "rgba(26,170,144,0.1)" },
-                { tag: "var(--gold)", border: "rgba(245,200,66,0.25)", bg: "rgba(245,200,66,0.1)" },
-                { tag: "#b06aff", border: "rgba(176,106,255,0.25)", bg: "rgba(176,106,255,0.1)" },
-                { tag: "#00e5b0", border: "rgba(0,229,176,0.25)", bg: "rgba(0,229,176,0.1)" },
-                { tag: "#ff6b6b", border: "rgba(255,107,107,0.25)", bg: "rgba(255,107,107,0.1)" },
-                { tag: "#4fc3f7", border: "rgba(79,195,247,0.25)", bg: "rgba(79,195,247,0.1)" },
-            ];
-
-            grid.innerHTML = data.map((ev, i) => {
-                const c = colors[i % colors.length];
-                const date = ev.EventDate ? new Date(ev.EventDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "";
-                const isPast = ev.Status === "past";
-                return `
-          <div class="program-card reveal">
-            <div class="program-img-wrap">
-              ${ev.ImageUrl
-                        ? `<img src="${ev.ImageUrl}" alt="${ev.Title}" class="program-real-img" />`
-                        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,rgba(26,144,128,0.08),rgba(26,144,128,0.02))">🎯</div>`}
-              <div class="program-img-overlay">
-                <span class="program-img-tag" style="color:${c.tag};border-color:${c.border};background:${c.bg}">
-                  ${isPast ? "✅ Past Event" : "🗓 Upcoming"}
-                </span>
-              </div>
-            </div>
-            <div class="program-body">
-              <h3>${ev.Title}</h3>
-              <p>${ev.Description || ""}</p>
-              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-                <span class="program-tag" style="color:${c.tag};border-color:${c.border}">${date}</span>
-                ${!isPast ? `<button class="btn-primary" style="padding:8px 16px;font-size:11px" onclick="window.location.href='events.html'">Register →</button>` : ""}
-              </div>
-            </div>
-          </div>
-        `;
-            });
-
-            document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
-        })
-        .catch(() => {
-            const grid = document.getElementById("programs-grid");
-            if (grid) grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">Could not load programs.</div>`;
-        });
-})();
-
-//-------------------------------------------------
-// ------------------------------------------------
-// ─── LOAD PROGRAMS (index page) ───
+// LOAD PROGRAMS FROM DB 
 (function () {
     const grid = document.getElementById("programs-grid");
     if (!grid) return;
@@ -502,25 +448,26 @@ function toggleNav() {
             <div class="program-img-wrap" style="height:180px">
               ${ev.ImageUrl
                         ? `<img src="${ev.ImageUrl}" alt="${ev.Title}" class="program-real-img" />`
-                        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,rgba(26,144,128,0.08),rgba(26,144,128,0.02))">🎯</div>`}
+                        : `<div style="width:100%;height:180px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,rgba(26,144,128,0.08),rgba(26,144,128,0.02))">🎯</div>`}
               <div class="program-img-overlay">
                 <span class="program-img-tag" style="color:${c.tag};border-color:${c.border};background:${c.bg}">
                   ${ev.Status === 'upcoming' ? '🗓 Upcoming' : '✅ Past'}
                 </span>
               </div>
             </div>
-            <div class="program-body">
-              <h3>${ev.Title}</h3>
+            <div class="program-body" style="padding:16px 20px">
+              <h3 style="font-size:15px;margin:0">${ev.Title}</h3>
             </div>
           </div>
         `;
-            });
+            }).join("");
             document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
         })
         .catch(() => {
             grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">Could not load programs.</div>`;
         });
 })();
+
 
 // ─── LOAD TICKER FROM DB ───
 (function () {
@@ -532,7 +479,7 @@ function toggleNav() {
         .then(data => {
             if (!data || data.length === 0) return;
             const items = data.map(ev => `<span>${ev.Title}</span><span class="sep">|</span>`).join("");
-            ticker.innerHTML = items + items; // duplicate for seamless loop
+            ticker.innerHTML = items + items;
         })
         .catch(() => { });
 })();
