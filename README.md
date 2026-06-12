@@ -19,6 +19,7 @@ This project was developed using ASP.NET (C#), Entity Framework, SQL Server, HTM
 * Responsive and user-friendly interface
 * Dynamic event loading from the database
 * Event image support
+* Chatbot support
 
 ### Admin Features
 
